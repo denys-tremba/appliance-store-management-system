@@ -2,7 +2,6 @@ package com.example.rd.autocode.assessment.appliances.order.complete;
 
 
 import com.example.rd.autocode.assessment.appliances.appliance.ApplianceRepository;
-import com.example.rd.autocode.assessment.appliances.order.Order;
 import com.example.rd.autocode.assessment.appliances.order.OrderNotFound;
 import com.example.rd.autocode.assessment.appliances.order.OrderRepository;
 import com.example.rd.autocode.assessment.appliances.user.client.signUp.ClientRepository;
@@ -10,7 +9,6 @@ import com.example.rd.autocode.assessment.appliances.user.employee.signUp.Employ
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,8 +31,6 @@ public class CompleteOrderService {
     final OrderRepository orderRepository;
     final ApplicationEventPublisher eventPublisher;
     CompleteOrderServiceState delegate;
-    @Setter
-    Order order = new NullOrder();
 
     @Autowired
     @Qualifier("waitingForOrderCreationState")
@@ -43,36 +39,16 @@ public class CompleteOrderService {
     }
 
     @Transactional
-    public void clearOrder() {
-        order.getOrderLineItems().clear();
+    public void enterLineItem(Long applianceId, Long number, com.example.rd.autocode.assessment.appliances.order.Order order) {
+        delegate.enterLineItem(this,applianceId, number, order);
     }
 
-    @Transactional
-    public void enterLineItem(Long applianceId, Long number) {
-        delegate.enterLineItem(this,applianceId, number);
-    }
-
-    public Order findById(Long id) {
+    public com.example.rd.autocode.assessment.appliances.order.Order findById(Long id) {
         return orderRepository.findById(id).orElseThrow(OrderNotFound::new);
     }
 
     @Transactional
-    public void completeOrder() {
-        delegate.completeOrder(this);
+    public void completeOrder(com.example.rd.autocode.assessment.appliances.order.Order order) {
+        delegate.completeOrder(this, order);
     }
-
-    public Order getCurrentOrder() {
-        return order;
-    }
-
-    @Transactional
-    public void removeOrderLineItemAt(int index) {
-        order.getOrderLineItems().remove(index);
-    }
-
-    @Transactional
-    public void updateLineItemQuantity(int index, Long quantity) {
-        order.getOrderLineItems().get(index).setQuantity(quantity);
-    }
-
 }

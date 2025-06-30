@@ -89,4 +89,16 @@ public class Order {
 
         state = OrderState.DISAPPROVED;
     }
+
+    public void clear() {
+        orderLineItems.clear();
+    }
+
+    public void removeLineItemAt(int index) {
+        orderLineItems.remove(index);
+    }
+
+    public void updateLineItemQuantity(int index, Long quantity) {
+        orderLineItems.get(index).setQuantity(quantity);
+    }
 }

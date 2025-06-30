@@ -4,11 +4,13 @@ import com.example.rd.autocode.assessment.appliances.user.employee.signUp.Employ
 import com.example.rd.autocode.assessment.appliances.user.employee.signUp.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 @RequiredArgsConstructor
 @Component
+@Profile("!prod")
 public class ConstantEmployeeSelectionStrategy implements EmployeeSelectionStrategy {
     private final EmployeeRepository employeeRepository;
     @Setter

@@ -83,4 +83,4 @@ INSERT INTO order_line_items (order_id, appliance_id, quantity, price)
 VALUES (6, 3, 1, 348.00);
 
 INSERT INTO order_line_items (order_id, appliance_id, quantity, price)
-VALUES (7, 7, 2, 1998.00); -- 2 iPhone 15 Pro
+VALUES (7, 7, 2, 1998.00);

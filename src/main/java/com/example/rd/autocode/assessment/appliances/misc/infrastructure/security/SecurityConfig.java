@@ -3,9 +3,11 @@ package com.example.rd.autocode.assessment.appliances.misc.infrastructure.securi
 import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
@@ -14,11 +16,15 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.ott.OneTimeTokenGenerationSuccessHandler;
+import org.springframework.security.web.savedrequest.CookieRequestCache;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.DispatcherTypeRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
@@ -30,10 +36,19 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 public class SecurityConfig {
     @Autowired
     OneTimeTokenGenerationSuccessHandler oneTimeTokenGenerationSuccessHandler;
+    @Autowired
+    JwtService jwtService;
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http, LoginLimitingAuthProviderProxy providerProxy) throws Exception {
+    @Profile("default")
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, LoginLimitingAuthProviderProxy providerProxy) throws Exception {
+        SavedRequestAwareAuthenticationSuccessHandler delegate = new SavedRequestAwareAuthenticationSuccessHandler();
+        delegate.setUseReferer(true);
+        CookieRequestCache requestCache = new CookieRequestCache();
+        delegate.setRequestCache(requestCache);
+        JwtCookieEnricherSuccessHandlerDecorator successHandler = new JwtCookieEnricherSuccessHandlerDecorator(delegate, jwtService);
         return http
                 .authorizeHttpRequests(c->c
+                            .requestMatchers("/login").permitAll()
                             .requestMatchers(new DispatcherTypeRequestMatcher(DispatcherType.ERROR)).permitAll()
                             .requestMatchers(HttpMethod.GET, "/login/ott/username").permitAll()
                             .requestMatchers("/clients/signUp", "/employees/signUp").permitAll()
@@ -41,6 +56,38 @@ public class SecurityConfig {
                             .requestMatchers(PathRequest.toH2Console()).permitAll()
                             .anyRequest().authenticated()
                         )
+                .headers((headers) -> headers.frameOptions((frame) -> frame.sameOrigin()))
+//                .csrf(c->c.ignoringRequestMatchers(PathRequest.toH2Console()))
+                .csrf(c->c.disable())
+//                .with(new JwtLoginConfigurer<>(), c->c.loginPage("/login"))
+                // CSRF protection is triggered for POST /logout but GET
+                .logout(c->c.logoutRequestMatcher(new OrRequestMatcher(
+                        PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET,"/logout"),
+                        PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,"/logout")
+                        )
+                ))
+                .formLogin(c->c.loginPage("/login").successHandler(successHandler))
+                .sessionManagement(c->c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(providerProxy)
+                .authenticationProvider(new AdminAuthenticationProvider())
+                .exceptionHandling(c->c.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
+                .requestCache(c->c.requestCache(requestCache))
+                .with(new JwtLoginConfigurer(), Customizer.withDefaults())
+                .build();
+    }
+
+    @Bean
+    @Profile("prod")
+    SecurityFilterChain securityFilterChain(HttpSecurity http, LoginLimitingAuthProviderProxy providerProxy) throws Exception {
+        return http
+                .authorizeHttpRequests(c->c
+                        .requestMatchers(new DispatcherTypeRequestMatcher(DispatcherType.ERROR)).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/login/ott/username").permitAll()
+                        .requestMatchers("/clients/signUp", "/employees/signUp").permitAll()
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        .requestMatchers(PathRequest.toH2Console()).permitAll()
+                        .anyRequest().authenticated()
+                )
                 .headers((headers) -> headers.frameOptions((frame) -> frame.sameOrigin()))
                 .csrf(c->c.ignoringRequestMatchers(PathRequest.toH2Console()))
                 .formLogin(customizer-> customizer
@@ -51,15 +98,20 @@ public class SecurityConfig {
                 .oauth2Client(Customizer.withDefaults())
                 // CSRF protection is triggered for POST /logout but GET
                 .logout(c->c.logoutRequestMatcher(new OrRequestMatcher(
-                        PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET,"/logout"),
-                        PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,"/logout")
+                                PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET,"/logout"),
+                                PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,"/logout")
                         )
                 ))
                 .authenticationProvider(providerProxy)
-                .authenticationProvider(new AdminAuthenticationProvider())
                 .build();
     }
 
+    @Bean
+    FilterRegistrationBean<JwtVerifierFilter> filterFilterRegistrationBean(JwtVerifierFilter jwtVerifierFilter) {
+        FilterRegistrationBean<JwtVerifierFilter> frb = new FilterRegistrationBean<>(jwtVerifierFilter);
+        frb.setEnabled(false);
+        return frb;
+    }
 
 
     @Bean
@@ -81,10 +133,3 @@ public class SecurityConfig {
                 .build();
     }
 }
-
-//                .objectPostProcessor(new ObjectPostProcessor<Object>() {
-//@Override
-//public <O extends Object> O postProcess(O object) {
-//        return object;
-//        }
-//        })
