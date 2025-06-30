@@ -1,77 +1,115 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      layout:decorate="~{misc/layout.html}"
+      xmlns="http://www.w3.org/1999/html"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <!-- Latest compiled and minified CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Latest compiled JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link th:href="@{/styles/css/main.css}" rel="stylesheet"/>
-    <title>Title</title>
+    <title>Orders</title>
 </head>
 <body>
-<header>
-    <div th:insert="~{menunavy::navy}"></div>
-</header>
-<main>
-    <h1 th:text="#{orders.header.list}">Orders list</h1>
-    <table class="table table-hover">
+<th:block layout:fragment="main-content">
+    <h1 class="mb-3" th:text="#{order.action.list}">Orders list</h1>
+    <div class="mb-2">
+        <form>
+            <div class="mb-1 d-flex flex-wrap align-items-center gap-2">
+                <span class="col-1" th:text="#{misc.action.sort}"></span>
+                <!--/*@thymesVar id="sort" type="com.example.rd.autocode.assessment.appliances.order.Order.Sort"*/-->
+                <th:block th:each="sort : ${sorts}">
+                    <input autocomplete="off"
+                           class="btn-check"
+                           name="sort"
+                           th:checked="${#strings.equals(param.sort,sort.paramValue())}"
+                           th:id="${#ids.seq('sort')}"
+                           th:value="${sort.paramValue}"
+                           type="radio"/>
+                    <label class="btn btn-outline-secondary"
+                           th:for="${#ids.prev('sort')}"
+                           th:text="#{__${'order.action.sort.' + sort.name}__}">placeholder</label>
+                </th:block>
+            </div>
+            <div class="mb-1 d-flex align-items-center gap-2">
+                <span class="col-1" th:text="#{misc.action.filter}">Filter by:</span>
+                <!--/*@thymesVar id="decision" type="com.example.rd.autocode.assessment.appliances.order.Order.Filter"*/-->
+
+                <th:block th:each="state : ${states}">
+                    <input autocomplete="off"
+                           class="btn-check"
+                           name="state"
+                           th:checked="${#strings.equals(param.state, state.name)}"
+                           th:id="${#ids.seq('state')}"
+                           th:value="${state.name}"
+                           type="radio"/>
+                    <label class="btn btn-outline-secondary"
+                           th:for="${#ids.prev('state')}"
+                           th:text="#{__${'order.action.filter.state.' + state.name}__}">
+                        placeholder
+                    </label>
+                </th:block>
+                <input
+                        hidden="hidden"
+                        name="criteria"
+                        value="true"/>
+            </div>
+            <button class="btn btn-primary" th:text="#{misc.action.apply}">Apply</button>
+        </form>
+    </div>
+    <table class="table table-striped table-hover">
         <thead>
         <tr class="table-dark">
-            <th>ID</th>
-            <th>Client</th>
-            <th>Employee</th>
-            <th>Approved</th>
-            <th>Amount</th>
-            <th>Operation</th>
+            <th th:text="#{order.attribute.date}">Date</th>
+            <th th:text="#{order.attribute.time}">Time</th>
+            <th th:text="#{order.attribute.clientName}">Client</th>
+            <th th:text="#{order.attribute.employeeName}">Employee</th>
+            <th th:text="#{order.attribute.state}">State</th>
+            <th th:text="#{order.attribute.total}">Amount</th>
+            <th th:text="#{misc.attribute.operation}">Operation</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="order: ${orders}">
-            <td><span class="float-end" th:text="${order.id}"/></td>
-            <td><span class="float-end" th:text="${order.client}"/></td>
-            <td><span class="float-end" th:text="${order.employee}"/></td>
+            <td th:text="${order.creationDate}"></td>
+            <td th:text="${order.creationTime}"></td>
+            <td th:text="${order.client}"></td>
+            <td th:text="${order.employee}"></td>
+            <td th:text="${order.state}"></td>
+            <td th:text="${order.amount}"></td>
             <td>
-                <div th:if="${order.approved}">
-                    <a th:href="@{orders/}+${order.id}+@{/unapproved}">
-                      <span class="icon">
-                        <i class="fa fa-check"></i>
-                      </span>
-
-                    </a>
-                </div>
-                <!-- ELSE -->
-                <div th:unless="${order.approved}">
-                    <a th:href="@{orders/}+${order.id}+@{/approved}">
-                    <span class="icon">
-                          <i class="fa fa-minus"></i>
-                    </span>
-
-                    </a>
-                </div>
-            </td>
-            <td><span class="float-end" th:text="${order.getAmount}"/></td>
-            <td>
-                <div>
-                    <a th:href="@{orders/}+${order.id}+@{/delete}">
-                        <i class="fa fa-times"></i>
-                    </a>
-                </div>
-                <div>
-                    <a th:href="@{orders/}+${order.id}+@{/edit}">
-                        <i class="fa fa-edit"></i>
-                    </a>
+                <div sec:authorize="hasRole('CLIENT')">
+                    <form method="get" th:action="@{/orders/{orderId}(orderId=${order.id})}">
+                        <button class="btn btn-primary">
+                            <i class="fa-regular fa-eye"></i>
+                            [[#{order.action.peek}]]
+                        </button>
+                    </form>
                 </div>
 
+                <div class="d-flex gap-1" sec:authorize="!hasRole('CLIENT')">
+                    <div>
+                        <form method="post" th:action="@{/orders/{orderId}/disapprove(orderId=${order.id})}">
+                            <button class="btn btn-primary">
+                                <i class="fa-solid fa-thumbs-down"></i>
+                                [[#{order.action.disapprove}]]
+                            </button>
+                        </form>
+                    </div>
+                    <!-- ELSE -->
+                    <div>
+                        <form method="post" th:action="@{/orders/{orderId}/approve(orderId=${order.id})}">
+                            <button class="btn btn-primary">
+                                <i class="fa-solid fa-thumbs-up"></i>
+                                [[#{order.action.approve}]]
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </td>
         </tr>
         </tbody>
     </table>
-    <a th:href="@{orders/add}" class="btn btn-primary" th:text="#{orders.btn.new}"></a>
-</main>
-<div th:insert="~{footer::footer}"></div>
+    <div class="row justify-content-center">
+        <div class="col-auto" th:insert="~{misc/fragments/pagination :: controls(page=${orders})}"></div>
+    </div>
+</th:block>
 </body>
 </html>
