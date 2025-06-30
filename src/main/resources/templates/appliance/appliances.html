@@ -1,53 +1,125 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      layout:decorate="~{misc/layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <!-- Latest compiled and minified CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Latest compiled JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <title>Title</title>
+    <title>Appliances</title>
 </head>
 <body>
-<header>
-    <div th:insert="~{menunavy::navy}"></div>
-</header>
-<main>
-    <h1 th:text="#{appliance.header.list}">Appliances list</h1>
-    <table class="table table-hover">
-        <thead>
-        <tr class="table-dark">
-            <th th:text="#{object.appliance.id}"></th>
-            <th th:text="#{object.appliance.name}"></th>
-            <th th:text="#{object.appliance.category}"></th>
-            <th th:text="#{object.appliance.model}"></th>
-            <th th:text="#{object.appliance.manufacturer}"></th>
-            <th th:text="#{object.appliance.powerType}"></th>
-            <th th:text="#{object.appliance.characteristic}"></th>
-            <th th:text="#{object.appliance.description}"></th>
-            <th th:text="#{object.appliance.power}"></th>
-            <th>Price</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="appliance: ${appliances}">
-            <td><span class="float-end" th:text="${appliance.id}"/></td>
-            <td th:text="${appliance.name}"/>
-            <td><span class="float-end" th:text="${appliance.category}"/></td>
-            <td th:text="${appliance.model}"/>
-            <td><span class="float-end" th:text="${appliance.manufacturer.getName()}"/></td>
-            <td th:text="${appliance.powerType}"/>
-            <td th:text="${appliance.characteristic}"/>
-            <td th:text="${appliance.description}"/>
-            <td><span class="float-end" th:text="${appliance.power}"/></td>
-            <td><span class="float-end" th:text="${appliance.price}"/></td>
-        </tr>
+<th:block layout:fragment="main-content">
 
-        </tbody>
-    </table>
-    <a th:href="@{appliances/add}" class="btn btn-primary" th:text="#{appliance.btn.new}">New appliance</a>
-</main>
-<div th:insert="~{footer::footer}"></div>
+    <h1 th:text="#{appliance.action.list}">Appliances</h1>
+
+    <a sec:authorize="hasRole('EMPLOYEE')" class="btn btn-primary mb-4" th:href="@{appliances/create}">
+        <i class="fa-solid fa-plus"></i>
+        [[#{misc.action.create}]]
+    </a>
+
+    <div class="mb-2">
+        <form th:object="${searchForm}">
+            <div class="mb-1 d-flex flex-wrap align-items-center gap-2">
+                <span th:text="#{misc.action.sort}" class="col-auto">Sort by:</span>
+                <!--/*@thymesVar id="sort" type="com.example.rd.autocode.assessment.appliances.order.Order.Sort"*/-->
+                <th:block th:each="sort : ${sorts}">
+                    <input autocomplete="off"
+                           class="btn-check"
+                           name="sort"
+                           th:checked="${#strings.equals(param.sort,sort.paramValue())}"
+                           th:id="${#ids.seq('sort')}"
+                           th:value="${sort.paramValue}"
+                           type="radio"/>
+                    <label class="d-inline-block btn btn-outline-secondary"
+                           th:for="${#ids.prev('sort')}"
+                           th:text="#{__${'appliance.action.sort.' + sort.name}__}">placeholder</label>
+                </th:block>
+            </div>
+            <div class="mb-1 d-flex align-items-center gap-2">
+                <span class="col-auto" th:text="|#{misc.action.filter} #{appliance.action.filter.powerType.title}|">Filter by power type:</span>
+
+                <div th:each="powerType : ${powerTypes}">
+                    <input autocomplete="off"
+                           class="btn-check"
+                           name="powerTypes"
+                           th:checked="${param.powerTypes != null and #arrays.contains(param.powerTypes, powerType.name)}"
+                           th:id="${#ids.seq('powerTypes')}"
+                           th:value="${powerType.name}"
+                           type="checkbox"/>
+                    <label class="btn btn-outline-secondary"
+                           th:for="${#ids.prev('powerTypes')}"
+                           th:text="#{__${'appliance.action.filter.powerType.' + powerType.name}__}">
+                        placeholder
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-1 d-flex align-items-center gap-2">
+                <span class="col-auto" th:text="|#{misc.action.filter} #{appliance.action.filter.category.title}|">Filter by category:</span>
+
+                <div th:each="category : ${categories}">
+                    <input autocomplete="off"
+                           class="btn-check"
+                           th:checked="${param.categories != null and #arrays.contains(param.categories, category.name)}"
+                           th:id="${#ids.seq('categories')}"
+                           th:name="categories"
+                           th:value="${category.name}"
+                           type="checkbox"/>
+                    <label class="btn btn-outline-secondary"
+                           th:for="${#ids.prev('categories')}"
+                           th:text="#{__${'appliance.action.filter.category.' + category.name}__}">
+                        placeholder
+                    </label>
+                    <input name="_categories" type="hidden" value="on">
+                </div>
+            </div>
+
+
+            <div class="mb-1 d-flex align-items-center gap-2">
+                <span class="col-auto" th:text="|#{misc.action.filter} #{appliance.action.filter.priceRange.title}|">Filter by price range:</span>
+
+                <div class="d-flex flex-nowrap align-items-center gap-2">
+                    <div class="input-group">
+                        <span class="input-group-text" th:text="#{appliance.action.filter.priceRange.start}">Start</span>
+                        <input class="form-control flex-grow-1"
+                               min="0"
+                               step="100"
+                               th:field="*{priceStart}"
+                               type="number"
+                               value="100">
+                    </div>
+                </div>
+
+                <div class="d-flex flex-nowrap align-items-center gap-2">
+                    <!--                    <label class="form-label mb-0 flex-shrink-0" th:for="${#ids.next('priceEnd')}">Price end</label>-->
+                    <div class="input-group">
+                        <span class="input-group-text" th:text="#{appliance.action.filter.priceRange.end}">End</span>
+                        <input class="form-control flex-grow-1"
+                               min="0"
+                               step="100"
+                               th:field="*{priceEnd}"
+                               type="number"
+                               value="4900">
+                    </div>
+                </div>
+
+            </div>
+            <button class="btn btn-primary">
+                <i class="fa-solid fa-filter"></i>
+                [[#{misc.action.apply}]]
+            </button>
+        </form>
+    </div>
+    <div class="row row-cols-4 g-4">
+
+
+        <div class="col" th:each="appliance : ${appliances}">
+            <th:block th:insert="~{misc/fragments/card :: card(appliance=${appliance})}"></th:block>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+    <div class="col-auto" th:insert="~{misc/fragments/pagination :: controls(page=${appliances})}"></div>
+    </div>
+</th:block>
 </body>
 </html>
