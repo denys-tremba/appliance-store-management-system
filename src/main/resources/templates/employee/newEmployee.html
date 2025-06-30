@@ -1,24 +1,34 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      layout:decorate="~{misc/layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <!-- Latest compiled and minified CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Latest compiled JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <title>New Employee</title>
+    <title>Sign up</title>
 </head>
 <body>
-<div th:insert="~{menunavy::navy}"></div>
-<h1 th:text="#{employee.btn.new}"></h1>
-<form action="#" th:action="@{add-employee}" th:object="${employee}" method="post">
-    <p><span th:text="#{object.user.name}"></span> <input type="text" th:field="*{name}"/></p>
-    <p><span th:text="#{object.user.email}"></span> <input type="text" th:field="*{email}"/></p>
-    <p><span th:text="#{object.user.password}"></span> <input type="text" th:field="*{password}"/></p>
-    <p><span th:text="#{object.employee.department}"></span> <input type="text" th:field="*{department}"/></p>
-    <p><input type="submit" value="Submit"/> <input type="reset" value="Reset"/></p>
-</form>
-<div th:insert="~{footer::footer}"></div>
+<div class="row justify-content-center" layout:fragment="main-content">
+    <div class="col-md-4">
+        <h1 th:text="#{employee.action.signUp}"></h1>
+        <form action="#" method="post" th:action="@{/employees/signUp}" th:object="${employee}">
+            <th:block
+                    th:insert="misc/fragments/form :: textinput(labelText=#{user.attribute.name}, fieldName='name')"></th:block>
+            <th:block
+                    th:insert="misc/fragments/form :: textinput(labelText=#{user.attribute.email}, fieldName='email')"></th:block>
+            <th:block
+                    th:insert="misc/fragments/form :: textinput(labelText=#{user.attribute.password}, fieldName='password')"></th:block>
+            <th:block
+                    th:insert="misc/fragments/form :: textinput(labelText=#{user.attribute.passwordRepeated}, fieldName='passwordRepeated')"></th:block>
+            <th:block
+                    th:insert="misc/fragments/form :: textinput(labelText=#{employee.attribute.department}, fieldName='department')">
+            </th:block>
+            <div class="mb-3">
+                <a class="btn btn-link ps-0" th:href="@{/clients/signUp}" th:text="|#{client.action.signUp}?|"></a>
+            </div>
+            <button class="btn btn-primary" th:text="#{user.action.signUp}" type="submit">Sign up</button>
+        </form>
+    </div>
+</div>
 </body>
 </html>

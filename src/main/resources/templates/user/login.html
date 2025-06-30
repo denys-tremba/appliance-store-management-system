@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{misc/layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Log in</title>
+</head>
+<body>
+<div class="row justify-content-center" layout:fragment="main-content">
+    <div class="col-md-4">
+        <h1 th:text="#{user.action.logIn}">Log in</h1>
+        <th:block th:if="${param.logout}">
+            <div th:insert="~{misc/fragments/alert :: success(message='You are successfuly logged out', type='success')}"></div>
+        </th:block>
+        <th:block th:if="${param.error}">
+            <div th:insert="~{misc/fragments/alert :: success(message=${session.get('SPRING_SECURITY_LAST_EXCEPTION').message}, type='danger')}"></div>
+        </th:block>
+        <form method="post" th:action="@{/login}">
+            <div class="mb-3">
+                <label class="col-form-label" for="username" th:text="#{user.attribute.email}">Username</label>
+                <input class="form-control" id="username" name="username" type="text"/>
+            </div>
+            <div class="mb-3">
+                <label class="col-form-label" for="password" th:text="#{user.attribute.password}">Password</label>
+                <input class="form-control" id="password" name="password" type="password"/>
+            </div>
+            <div class="mb-3">
+            <a class="btn btn-link ps-0" th:href="@{/login/ott/username}" th:text="#{user.action.forgotPassword}"></a>
+            </div>
+            <button class="btn btn-primary" type="submit" th:text="#{user.action.logIn}">Log in</button>
+            <a class="btn btn-outline-primary" th:href="@{/oauth2/authorization/google} " th:text="#{user.action.logInWithGoogle}">Login with Google</a>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{misc/layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Password Reset</title>
+</head>
+<body>
+<div class="row justify-content-center" layout:fragment="main-content">
+    <div class="col-md-4">
+        <h1 th:text="#{user.action.oneTimeLogin}">Reset password</h1>
+        <form method="post" th:action="@{/ott/generate}">
+            <div class="mb-3">
+                <label class="col-form-label" for="username" th:text="#{user.attribute.email}">Username</label>
+                <input class="form-control" id="username" name="username" type="text"/>
+            </div>
+            <button class="btn btn-primary" type="submit" th:text="#{misc.action.enter}">Send</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

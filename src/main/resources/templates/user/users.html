@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{misc/layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Order creation</title>
+</head>
+<body>
+<th:block layout:fragment="main-content">
+<h1 th:text="Users"></h1>
+<table class="table table-hover">
+    <thead>
+    <tr class="table-dark">
+        <th th:text="#{user.attribute.name}"></th>
+        <th th:text="role"></th>
+        <th th:text="isLocked"></th>
+        <th>Operation</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr th:each="user: ${users}">
+            <td th:text="${user.name}"/>
+            <td th:text="${user.roleName}"/>
+            <td th:text="${user.locked}"/>
+            <td>
+                <div>
+                    <form method="post" th:action="@{users/}+${user.id}+@{/lock}">
+                    <button class="btn btn-primary">
+                          <i class="fa fa-minus"></i>
+                          Lock
+                    </button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</th:block>
+</body>
+</html>
