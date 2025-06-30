@@ -12,11 +12,11 @@ Your application has to imitate work of an online shop.
 Employees should be able to do the following:
 1. show every table;
 2. add, correct, and delete `Employee`, `Client`, `Appliance`, `Manufacturer`;
-3. approve orders.
+3. approve order.
 
 Clients and employees should be able to do the following:
 1. have navigation and provide access for permitted elements front-end;
-2. add, correct, and delete orders.
+2. add, correct, and delete order.
 
 Users must be able to work in two languages(native and English). 
 

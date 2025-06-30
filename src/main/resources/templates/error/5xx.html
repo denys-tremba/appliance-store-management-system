@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{misc/layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Exceptional</title>
+</head>
+<body>
+<div layout:fragment="main-content">
+        <a class="btn btn-primary" th:href="${url}">
+            <i class="fa-solid fa-arrow-left"></i>
+            Go back
+        </a>
+<!--
+    <th:block th:if="${exception}">
+        <div class="mb-2 mt-6 text-xl">Technical Information</div>
+        <div class="flex mb-2">
+            <div class="mr-2">Error Code:</div>
+            <div th:text="${status}" class="font-mono"></div>
+        </div>
+        <div class="flex mb-2">
+            <div class="mr-2">Exception:</div>
+            <div th:text="${exception}" class="font-mono"></div>
+        </div>
+        <div th:if="${trace}" class="mb-1">Stack trace:</div>
+        <div th:text="${trace}" class="ml-2 font-mono text-sm"></div>
+    </th:block>
+-->
+</div>
+</body>
+</html>
