@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.css}">
+    <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">Appliance</title>
+</head>
+<body>
+<th:block th:insert="~{misc/fragments/menunavy::navy}"></th:block>
+<div class="container p-1">
+    <th:block th:if="${message}" th:insert="~{misc/fragments/alert :: success(message=${message},type='success')}"></th:block>
+    <th:block th:if="${error}" th:insert="~{misc/fragments/alert :: success(message=${error},type='danger')}"></th:block>
+    <th:block th:if="${warning}" th:insert="~{misc/fragments/alert :: success(message=${warning},type='warning')}"></th:block>
+
+    <div layout:fragment="main-content">Main content placeholder</div>
+</div>
+<!--<div th:insert="~{misc/fragments/footer::footer}"></div>-->
+
+<!--<script th:src="@{/webjars/alpinejs/dist/cdn.min.js}" type="text/javascript"></script>-->
+<script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.js}" type="text/javascript"></script>
+<script th:src="@{/js/user-popup-menu.js}" type="text/javascript"></script>
+<script th:src="@{/js/input.js}" type="text/javascript"></script>
+<script type="text/javascript">
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+</script>
+<th:block layout:fragment="page-scripts"></th:block>
+</body>
+</html>

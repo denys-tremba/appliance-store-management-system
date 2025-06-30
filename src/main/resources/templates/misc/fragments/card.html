@@ -1,0 +1,30 @@
+<!--/*@thymesVar id="appliance" type="com.example.rd.autocode.assessment.appliances.appliance.Appliance"*/-->
+<div th:fragment="card(appliance)" class="card h-100" xmlns:th="http://www.w3.org/1999/html">
+    <img th:src="@{/images/svg/appliance.svg}" class="card-img-top" alt="image">
+    <div class="card-body">
+        <h2 class="card-title text-truncate">
+            <span th:text="${appliance.name}"></span>
+        </h2>
+        <p class="card-text text-truncate" th:text="${appliance.description}">placeholder</p>
+        <th:block sec:authorize="hasRole('CLIENT')">
+            <a href="javascript:void(0)"
+                     th:id="${#ids.seq('lineItemModalLink')}"
+                     class="btn btn-primary" data-bs-toggle="modal" th:data-bs-target="|#${#ids.seq('lineItemModal')}|"
+                     th:text="#{misc.action.enter}">Add to order</a>
+            <th:block th:insert="~{misc/fragments/modal :: modal(appliance=${appliance})}"></th:block>
+        </th:block>
+        <a href="javascript:void(0)" data-bs-toggle="modal" th:data-bs-target="|#${#ids.seq('detailsModal')}|" class="btn btn-outline-primary" th:text="#{appliance.action.showDetails.subtitle}">Details</a>
+        <th:block th:insert="~{misc/fragments/modal :: detailsModal(appliance=${appliance})}"></th:block>
+        <a class="btn btn-outline-primary" sec:authorize="hasRole('EMPLOYEE')" th:href="@{/appliances/{id}/edit(id=${appliance.id})}" th:text="#{misc.action.edit}">Edit</a>
+        <form sec:authorize="hasRole('EMPLOYEE')" method="post" th:action="@{/appliances/{id}/delete(id=${appliance.id})}">
+        <button class="btn btn-outline-primary">[[#{misc.action.delete}]]</button>
+        </form>
+    </div>
+    <div class="card-footer">
+        <small class="text-body-secondary"
+               th:with="lastUpdated=${appliance.lastUpdatedAt == null ? #conversions.convert(appliance.createdAt, 'String') : #conversions.convert(appliance.lastUpdatedAt, 'String')}"
+               th:text="#{misc.lastUpdate(${lastUpdated})}">
+
+        </small>
+    </div>
+</div>

@@ -1,0 +1,107 @@
+<!--/*@thymesVar id="order" type="com.example.rd.autocode.assessment.appliances.order.Order"*/-->
+<!--/*@thymesVar id="appliance" type="com.example.rd.autocode.assessment.appliances.appliance.Appliance"*/-->
+<div class="modal" tabindex="-1" th:fragment="modal(appliance)" th:id="${#ids.prev('lineItemModal')}">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" th:text="#{appliance.action.enterLineItem.title}">Entering line item</h3>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+            </div>
+            <div class="modal-body">
+                <p th:text="#{appliance.action.enterLineItem.subtitle(${appliance.name})}">placeholder</p>
+                <form class="store-form" method="post"
+                      th:action="@{/orders/current/lineItem/enter}" th:id="${#ids.seq('lineItemModalForm')}">
+                    <input th:name="applianceId" th:value="${appliance.id}" type="hidden">
+                    <label class="col-form-label" th:for="quantity" th:text="#{order.lineItem.attribute.quantity}">Quantity:</label>
+                    <input class="form-control" id="quantity" min="0" step="1" th:name="numbers" type="number"
+                           value="1"/>
+                    <p><span th:text="#{appliance.attribute.price}"></span> <span data-price
+                                                                                  th:text="${appliance.price}"></span>
+                    </p>
+                    <p><span th:text="#{order.lineItem.attribute.subtotal}"></span> <span data-subtotal
+                                                                                          th:text="${appliance.price}"></span>
+                    </p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{misc.action.close}" type="button">
+                    Close
+                </button>
+                <button class="btn btn-primary" th:form="${#ids.prev('lineItemModalForm')}"
+                        th:text="#{misc.action.enter}"
+                        type="submit">Enter
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" th:fragment="detailsModal(appliance)" th:id="${#ids.prev('detailsModal')}">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" th:text="#{appliance.action.showDetails.subtitle}">Appliance details</h3>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                </div>
+                <div class="modal-body">
+                    <p><span th:text="#{appliance.attribute.name}"></span> : <span
+                            th:text="${appliance.name}"></span></span:></p>
+                    <p><span th:text="#{appliance.attribute.category}"></span>: <span
+                            th:text="${appliance.category}"></span></p>
+                    <p><span th:text="#{appliance.attribute.model}"></span>: <span th:text="${appliance.model}"></span>
+                    </p>
+                    <p><span th:text="#{appliance.attribute.powerType}"></span>: <span
+                            th:text="${appliance.powerType}"></span></p>
+                    <p><span th:text="#{appliance.attribute.manufacturer}"></span>: <span
+                            th:text="${appliance.manufacturer.name}"></span></p>
+                    <p><span th:text="#{appliance.attribute.characteristic}"></span>: <span
+                            th:text="${appliance.characteristic}"></span></p>
+                    <p><span th:text="#{appliance.attribute.description}"></span>: <span
+                            th:text="${appliance.description}"></span></p>
+                    <p><span th:text="#{appliance.attribute.power}"></span>:<span th:text="${appliance.power}"></span>
+                    </p>
+                    <p><span th:text="#{appliance.attribute.price}"></span>: <span th:text="${appliance.price}"></span>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{misc.action.close}"
+                            type="button">Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" th:fragment="editLineItemModal(lineItem)" th:id="${#ids.prev('lineItemModal')}">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" th:text="#{appliance.action.enterLineItem.title}">Entering line item</h3>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+            </div>
+            <div class="modal-body">
+                <p th:text="#{order.action.editLineItem.subtitle(${lineItem.appliance.name})}">placeholder</p>
+                <form class="store-form" method="post"
+                      th:action="@{/orders/current/lineItem/{id}/edit(id=${stat.index})}"
+                      th:id="${#ids.seq('lineItemModalForm')}">
+                    <label class="col-form-label" th:for="quantity" th:text="#{order.lineItem.attribute.quantity}">Quantity:</label>
+                    <input class="form-control" id="quantity" min="0" step="1"
+                           th:name="quantity" th:value="${lineItem.quantity}" type="number" value="1"/>
+                    <p><span th:text="#{appliance.attribute.price}"></span> <span data-price th:text="${lineItem.price}"></span></p>
+                    <p><span th:text="#{order.lineItem.attribute.subtotal}"></span> <span data-subtotal th:text="${lineItem.subtotal}"></span></p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{misc.action.close}"
+                        type="button">Close
+                </button>
+                <button class="btn btn-primary" th:form="${#ids.prev('lineItemModalForm')}"
+                        th:text="#{misc.action.enter}"
+                        type="submit">Enter
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

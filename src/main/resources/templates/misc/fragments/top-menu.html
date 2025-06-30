@@ -1,0 +1,35 @@
+<div class="dropdown" th:fragment="top-menu">
+    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownMenuLink"
+       role="button">
+        [[#{user.action.changeSettings}]]
+    </a>
+
+    <ul aria-labelledby="dropdownMenuLink" class="dropdown-menu p-2">
+        <th:block sec:authorize="isFullyAuthenticated()">
+            <li class="dropdown-item mb-0"><span sec:authentication="name"></span></li>
+            <li class="dropdown-item mb-3"><span sec:authentication="authorities"></span></li>
+            <li class="dropdown-item mb-2">
+                <a class="btn btn-primary d-flex" th:href="@{/manageAccount/changePassword}" th:text="#{user.action.changePassword}">Change
+                    password</a>
+            </li>
+            <li class="dropdown-item mb-2">
+                <form method="post" th:action="@{/manageAccount/delete}">
+                    <button class="btn btn-primary d-flex" th:text="#{user.action.deleteAccount}"></button>
+                </form>
+            </li>
+        </th:block>
+        <li class="dropdown-item mb-2">
+            <form class="d-flex flex-column gap-1">
+                <div class="d-flex gap-1">
+                    <label class="col-form-label" th:for="lang" th:text="#{misc.attribute.language}"></label>
+                    <select class="form-select" name="lang" th:id="lang">
+                        <option th:each="locale : ${locales}" th:selected="${locale} eq ${#locale}"
+                                th:text="${locale.getCountry()}"
+                                th:value="${locale.toString()}"></option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" th:text="#{misc.action.changeLanguage}">Change</button>
+            </form>
+        </li>
+    </ul>
+</div>

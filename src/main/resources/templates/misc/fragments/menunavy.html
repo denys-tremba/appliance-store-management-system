@@ -1,0 +1,87 @@
+<th:block xmlns:th="http://www.thymeleaf.org">
+    <nav class="navbar sticky-top navbar-expand-sm bg-primary navbar-dark" th:fragment="navy">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/static">DenysShop</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav">
+                    <li class="nav-item" sec:authorize="isFullyAuthenticated()">
+                        <a class="nav-link"
+                           th:classappend="${#ctx.getExchange().getRequest().getRequestURI()} eq '/manufacturers' ? 'active' : ''"
+                           th:href="@{/manufacturers}" th:text="#{manufacturer.action.list}"></a>
+                    </li>
+                    <li sec:authorize="hasRole('ADMIN')" class="nav-item">
+                        <a class="nav-link"
+                           th:classappend="${#ctx.getExchange().getRequest().getRequestURI()} eq '/users' ? 'active' : ''"
+                           th:href="@{/users}" th:text="#{user.action.list}"></a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isFullyAuthenticated()">
+                        <a class="nav-link"
+                           th:classappend="${#ctx.getExchange().getRequest().getRequestURI()} eq '/appliances' ? 'active' : ''"
+                           th:href="@{/appliances}" th:text="#{appliance.action.list}"></a>
+                    </li>
+
+                    <div sec:authorize="isAuthenticated()" class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+                        <ul class="navbar-nav">
+                            <li class="nav-item dropdown">
+                                <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
+                                   href="#" id="navbarDarkDropdownMenuLink" role="button"
+                                   th:text="#{order.action.list}">
+
+                                </a>
+                                <ul aria-labelledby="navbarDarkDropdownMenuLink" class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item"
+                                           th:classappend="${#ctx.getExchange().getRequest().getRequestURI()} eq ${url} ? 'active' : ''"
+                                           th:href="${url}"
+                                           th:text="#{order.action.list.history}"
+                                           th:with="url=@{/orders/} + ${#authentication.getAuthorities().get(0).getAuthority().replace('ROLE_','').toLowerCase()}"></a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           th:classappend="${#ctx.getExchange().getRequest().getRequestURI()} eq ${url} ? 'active' : ''"
+                                           th:href="${url}"
+                                           th:text="#{order.action.list.statistics}" th:with="url=@{/charts}"></a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <li class="nav-item">
+                        <th:block th:insert="~{misc/fragments/top-menu :: top-menu}"></th:block>
+                    </li>
+                </ul>
+                <div class="d-flex flex-nowrap ms-auto gap-1" >
+                    <form class="d-flex gap-0 me-2" sec:authorize="isFullyAuthenticated()" method="get" th:action="@{/appliances/search}">
+                        <div class="input-group"><input aria-label="Search" class="form-control" name="text"
+                                                        placeholder="appliance description"
+                                                        type="search">
+                            <button class="btn btn-secondary d-flex flex-row align-items-center" type="submit">
+                                <svg class="bi bi-search" fill="currentColor" height="16" viewBox="0 0 16 16"
+                                     width="16" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                    <th:block sec:authorize="isAnonymous()">
+                        <a class="btn btn-light" th:href="@{/login}"
+                                 th:text="#{user.action.logIn}">Log in</a>
+                    </th:block>
+                    <a class="btn btn-outline-light" th:href="@{/clients/signUp}"
+                       th:text="#{user.action.signUp}" sec:authorize="isAnonymous()">Sign up</a>
+                    <a class="btn btn-light me-1"
+                       sec:authorize="hasRole('CLIENT') and !hasRole('ADMIN')"
+                       th:classappend="${#ctx.getExchange().getRequest().getRequestURI()} eq '/order/current' ? 'active' : ''"
+                       th:href="@{/orders/current}">
+                        <i class="fa-solid fa-cart-plus"></i>
+                    </a>
+                    <form method="post" sec:authorize="isFullyAuthenticated()" th:action="@{/logout}"> <!--.-->
+                        <button class="btn btn-secondary" th:text="#{user.action.logOut}">
+                            Log out
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+</th:block>

@@ -1,0 +1,46 @@
+<div id="pagination">
+    <div id="pagination-summary" th:fragment="pagination-summary">
+        <span th:text="#{pagination.summary(${firstRowNum}, ${lastRowNum}, ${page.getTotalElements()})}"
+              th:with="firstRowNum=${page.getSize() * page.getNumber() + 1},
+                    lastRowNum=${page.getSize() * page.getNumber() + page.getNumberOfElements()}">
+            Pagination summary
+        </span>
+    </div>
+    <nav id="pagination-controls" th:fragment="controls">
+        <ul class="pagination">
+            <li class="page-item">
+                <a class="page-link"
+                   id="pagination-previous"
+                   th:text="#{misc.pagination.action.prev}"
+                   th:classappend="${page.isFirst()}?'disabled'"
+                   th:disabled="${page.isFirst()}"
+                   th:href="${page.isFirst()}?'javascript:void(0)':${@uriComponentBuilder.replaceQueryParam('page', page.number - 1).build(false).toUriString()}">
+                    Previous
+                </a>
+            </li>
+            <th:block
+                    th:with="startPage=${T(java.lang.Math).max(1, page.getNumber() - 1)},endPage=${T(java.lang.Math).min(startPage + 4, page.getTotalPages())}">
+                <li class="page-item" th:if="${pageNumber != 0}"
+                    th:each="pageNumber : ${#numbers.sequence(startPage, endPage)}">
+                    <a class="page-link"
+                       th:href="${@uriComponentBuilder.replaceQueryParam('page', pageNumber - 1).build(false).toUriString()}"
+                       th:id="${'pagination-page-' + pageNumber}"
+                       th:classappend="${page.number == pageNumber - 1?'active':''}">
+                        <span th:remove="tag" th:text="${pageNumber}"></span>
+                    </a>
+                </li>
+            </th:block>
+
+            <li class="page-item">
+                <a class="page-link" id="pagination-next"
+                   th:text="#{misc.pagination.action.next}"
+                   th:aria-label="Next"
+                   th:classappend="${page.isLast()}?'disabled'"
+                   th:disabled="${page.isLast()}"
+                   th:href="${page.isLast()}?'javascript:void(0)':${@uriComponentBuilder.replaceQueryParam('page', page.number + 1).build(false).toUriString()}">
+                    Next
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>

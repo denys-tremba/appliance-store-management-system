@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{misc/layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org"
+      th:with="isUpdateMode=${editMode.name() eq 'UPDATE'}">
+<head>
+    <title>Manufacturer</title>
+</head>
+<body>
+<div class="row justify-content-center" layout:fragment="main-content">
+    <div class="col-md-4">
+    <h1 th:text="#{manufacturer.action.create}"></h1>
+    <form th:action="${!isUpdateMode} ? @{/manufacturers/create} : @{/manufacturers/{id}/edit(id=${manufacturer.id})}" th:object="${manufacturer}" method="post">
+        <th:block th:insert="misc/fragments/form :: textinput(labelText=#{manufacturer.attribute.name}, fieldName='name')"></th:block>
+        <button class="btn btn-primary" type="submit" th:text="#{misc.action.save}">Save</button>
+    </form>
+    </div>
+</div>
+</body>
+</html>

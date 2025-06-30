@@ -1,0 +1,34 @@
+<div th:fragment="textinput(labelText, fieldName)"
+     class="mb-3"
+     th:with="inputType=${inputType?:'text'},placeholder=${placeholder?:''}">
+    <label class="col-form-label" th:for="${fieldName}" th:text="${labelText}">placeholder:</label>
+    <input class="form-control"
+           th:classappend="${#fields.hasErrors('__${fieldName}__')} ? 'is-invalid'"
+           th:field="*{__${fieldName}__}"
+           th:placeholder="${placeholder}"
+           th:type="${inputType}"
+           th:id="${fieldName}"/>
+    <div class="invalid-feedback" th:errors="*{__${fieldName}__}"></div>
+</div>
+<div th:fragment="textarea(labelText, fieldName)"
+     class="mb-3"
+     th:with="inputType=${inputType?:'text'},placeholder=${placeholder?:''}">
+    <label class="col-form-label" th:for="${fieldName}" th:text="${labelText}">placeholder:</label>
+    <textarea class="form-control"
+           th:classappend="${#fields.hasErrors('__${fieldName}__')} ? 'is-invalid'"
+           th:field="*{__${fieldName}__}"
+           th:placeholder="${placeholder}"
+           th:type="${inputType}"
+           th:id="${fieldName}"
+              rows="3">
+    </textarea>
+    <div class="invalid-feedback" th:errors="*{__${fieldName}__}"></div>
+</div>
+<div th:fragment="selectinput(labelText, fieldName, options, valueAccessor)" class="mb-3">
+    <label class="col-form-label" th:for="${fieldName}" th:text="${labelText}"></label>
+    <select class="form-select" th:id="${fieldName}" th:field="*{__${fieldName}__}">
+        <option th:each="option : ${options}" th:text="${option.name}"
+                th:selected="${objectForComparision} eq null ? _ : ${option} eq ${objectForComparision.__${fieldName}__}"
+                th:value="${option.__${valueAccessor}__}"></option>
+    </select>
+</div>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{misc/layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manufacturers</title>
+</head>
+<body>
+<th:block layout:fragment="main-content">
+<a th:href="@{/manufacturers/create}" class="btn btn-primary mb-3" th:text="#{misc.action.create}">Create</a>
+<table class="table table-hover">
+    <thead>
+    <tr class="table-dark">
+        <th th:text="#{manufacturer.attribute.id}">ID</th>
+        <th th:text="#{manufacturer.attribute.name}">Name</th>
+        <th th:text="#{misc.attribute.operation}">Op</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="manufacturer: ${manufacturers}">
+        <td th:text="${manufacturer.id}"/>
+        <td th:text="${manufacturer.name}"/>
+        <td class="d-flex gap-1" sec:authorize="hasRole('EMPLOYEE')">
+            <div>
+                <form method="post" th:action="@{/manufacturers/{id}/delete(id=${manufacturer.id})}">
+                    <button class="btn btn-primary">
+                        <i class="fa-solid fa-trash"></i>
+                        [[#{misc.action.delete}]]
+                    </button>
+                </form>
+            </div>
+            <div>
+                <form method="get" th:action="@{/manufacturers/{id}/edit(id=${manufacturer.id})}">
+                    <button class="btn btn-primary">
+                        <i class="fa-solid fa-edit"></i>
+                        [[#{order.action.edit}]]
+                    </button>
+                </form>
+            </div>
+        </td>
+    </tr>
+
+    </tbody>
+</table>
+</th:block>
+</body>
+</html>
