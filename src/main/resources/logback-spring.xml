@@ -25,6 +25,14 @@
             <pattern>%-4relative [%thread] %-5level %logger{35} -%kvp- %msg%n</pattern>
         </encoder>
     </appender>
+    <appender name="AI_FILE_APPENDER" class="FileAppender">
+        <file>logs/ai.log</file>
+        <append>true</append>
+        <immediateFlush>true</immediateFlush>
+        <encoder class="PatternLayoutEncoder">
+            <pattern>%d %-4relative [%thread] %-5level %logger{35} -%kvp- %msg%n</pattern>
+        </encoder>
+    </appender>
     <appender name="AOP_FILE_APPENDER" class="FileAppender">
         <file>logs/aop.log</file>
         <append>true</append>
@@ -53,6 +61,9 @@
         </cyclicBufferTracker>
     </appender>
     <logger name="org.springframework.web" level="TRACE"/>
+    <logger name="org.springframework.ai" level="TRACE">
+        <appender-ref ref="AI_FILE_APPENDER"/>
+    </logger>
     <logger name="org.springframework.test" level="TRACE"/>
     <logger name="org.springframework.security" level="TRACE"/>
     <logger name="com.example.rd.autocode.assessment.appliances.misc.infrastructure.security.AuthenticationEventListener" level="TRACE">
