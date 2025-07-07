@@ -42,9 +42,8 @@ public class CompleteOrderService {
         delegate = state;
     }
 
-    @Transactional
     public void clearOrder() {
-        order.getOrderLineItems().clear();
+        order.clear();
     }
 
     @Transactional
@@ -65,14 +64,21 @@ public class CompleteOrderService {
         return order;
     }
 
-    @Transactional
     public void removeOrderLineItemAt(int index) {
         order.getOrderLineItems().remove(index);
     }
 
-    @Transactional
     public void updateLineItemQuantity(int index, Long quantity) {
         order.getOrderLineItems().get(index).setQuantity(quantity);
     }
 
+    public void removeOrderLineItemsWithApplianceId(Long applianceId) {
+        order.getOrderLineItems().removeIf(oli -> oli.getAppliance().getId().equals(applianceId));
+    }
+
+    @Transactional(readOnly = false)
+    public void revoke(Long id) {
+        Order order = findById(id);
+        order.revoke();
+    }
 }

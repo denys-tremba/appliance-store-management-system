@@ -1,4 +1,4 @@
-package com.example.rd.autocode.assessment.appliances.appliance;
+package com.example.rd.autocode.assessment.appliances.misc.infrastructure.ai;
 
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class AiConfig {
     @Bean
     VectorStore vectorStore(EmbeddingModel embeddingModel) {
-        return new SimpleVectorStore(embeddingModel);
+        return SimpleVectorStore.builder(embeddingModel)
+                .build();
     }
 }

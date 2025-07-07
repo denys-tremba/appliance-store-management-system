@@ -18,7 +18,7 @@
     </a>
 
     <div class="mb-2">
-        <form th:object="${searchForm}">
+        <form th:action="@{/appliances}" th:object="${searchForm}">
             <div class="mb-1 d-flex flex-wrap align-items-center gap-2">
                 <span th:text="#{misc.action.sort}" class="col-auto">Sort by:</span>
                 <!--/*@thymesVar id="sort" type="com.example.rd.autocode.assessment.appliances.order.Order.Sort"*/-->

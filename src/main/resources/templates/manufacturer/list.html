@@ -9,8 +9,8 @@
 </head>
 <body>
 <th:block layout:fragment="main-content">
-<a th:href="@{/manufacturers/create}" class="btn btn-primary mb-3" th:text="#{misc.action.create}">Create</a>
-<table class="table table-hover">
+<a sec:authorize="hasRole('EMPLOYEE')" th:href="@{/manufacturers/create}" class="btn btn-primary mb-3" th:text="#{misc.action.create}">Create</a>
+<table class="mt-5 table table-hover">
     <thead>
     <tr class="table-dark">
         <th th:text="#{manufacturer.attribute.id}">ID</th>
@@ -44,6 +44,9 @@
 
     </tbody>
 </table>
+    <div class="row justify-content-center">
+        <div class="col-auto" th:insert="~{misc/fragments/pagination :: controls(page=${manufacturers})}"></div>
+    </div>
 </th:block>
 </body>
 </html>

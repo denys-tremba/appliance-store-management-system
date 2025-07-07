@@ -3,6 +3,8 @@ package com.example.rd.autocode.assessment.appliances.manufacturer.manage;
 import com.example.rd.autocode.assessment.appliances.misc.infrastructure.web.EditMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.SortDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,8 +20,8 @@ public class ManufacturerController {
     private final ManageManufacturerService service;
 
     @GetMapping
-    public String findAll(Model model) {
-        model.addAttribute("manufacturers", service.findAll());
+    public String findAll(Model model, @SortDefault.SortDefaults(@SortDefault("name")) Pageable pageable) {
+        model.addAttribute("manufacturers", service.findAll(pageable));
         return "manufacturer/list";
     }
     @GetMapping("/create")

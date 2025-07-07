@@ -39,7 +39,7 @@ public class SecurityConfig {
                             .requestMatchers("/clients/signUp", "/employees/signUp").permitAll()
                             .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                             .requestMatchers(PathRequest.toH2Console()).permitAll()
-                            .anyRequest().authenticated()
+                                .anyRequest().authenticated()
                         )
                 .headers((headers) -> headers.frameOptions((frame) -> frame.sameOrigin()))
                 .csrf(c->c.ignoringRequestMatchers(PathRequest.toH2Console()))

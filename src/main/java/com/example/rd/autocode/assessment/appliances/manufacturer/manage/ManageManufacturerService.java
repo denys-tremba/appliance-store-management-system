@@ -1,10 +1,10 @@
 package com.example.rd.autocode.assessment.appliances.manufacturer.manage;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -24,8 +24,8 @@ public class ManageManufacturerService {
         repository.deleteById(id);
     }
 
-    public List<Manufacturer> findAll() {
-        return repository.findAll();
+    public Page<Manufacturer> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     public Manufacturer findById(Long id) {

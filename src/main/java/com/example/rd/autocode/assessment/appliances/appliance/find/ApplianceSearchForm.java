@@ -29,7 +29,9 @@ public class ApplianceSearchForm {
             specification = specification.and(hasCategoryTypeIn(Arrays.asList(categories)));
         }
 
-        if (priceStart != null && priceEnd != null) {
+        if (priceStart != null || priceEnd != null) {
+            priceStart = priceStart == null? BigDecimal.ZERO :priceStart;
+            priceEnd = priceEnd == null? BigDecimal.valueOf(Long.MAX_VALUE) :priceEnd;
             specification = specification.and(hasPriceInRange(priceStart, priceEnd));
         }
 

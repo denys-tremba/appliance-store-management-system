@@ -10,6 +10,7 @@
           name="viewport">
     <meta content="ie=edge" http-equiv="X-UA-Compatible">
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" th:href="@{/css/chat.css}"/>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.css}">
     <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.css}">
     <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">Appliance</title>
@@ -17,15 +18,51 @@
 <body>
 <th:block th:insert="~{misc/fragments/menunavy::navy}"></th:block>
 <div class="container p-1">
-    <th:block th:if="${message}" th:insert="~{misc/fragments/alert :: success(message=${message},type='success')}"></th:block>
-    <th:block th:if="${error}" th:insert="~{misc/fragments/alert :: success(message=${error},type='danger')}"></th:block>
-    <th:block th:if="${warning}" th:insert="~{misc/fragments/alert :: success(message=${warning},type='warning')}"></th:block>
+    <th:block th:if="${message}"
+              th:insert="~{misc/fragments/alert :: success(message=${message},type='success')}"></th:block>
+    <th:block th:if="${error}"
+              th:insert="~{misc/fragments/alert :: success(message=${error},type='danger')}"></th:block>
+    <th:block th:if="${warning}"
+              th:insert="~{misc/fragments/alert :: success(message=${warning},type='warning')}"></th:block>
 
     <div layout:fragment="main-content">Main content placeholder</div>
 </div>
-<!--<div th:insert="~{misc/fragments/footer::footer}"></div>-->
 
-<!--<script th:src="@{/webjars/alpinejs/dist/cdn.min.js}" type="text/javascript"></script>-->
+<!-- Chat toggle checkbox -->
+<input id="check" type="checkbox">
+
+<!-- Chat open/close button -->
+<label sec:authorize="hasRole('CLIENT')" class="chat-btn" for="check">
+    <i class="fa fa-commenting comment"></i>
+    <i class="fa fa-close close"></i>
+</label>
+
+<!-- The Chat Window -->
+<div class="wrapper">
+    <div class="header">
+        <h6>Personal assistant</h6>
+    </div>
+
+    <!-- This is the new chat area -->
+    <div class="chat-box" id="chat-box">
+        <!-- Initial bot message -->
+        <div class="chat-message response">
+            Hello! How can I help you today?
+        </div>
+    </div>
+
+    <!-- This is the new input form -->
+    <form class="chat-input-form" id="chat-form">
+        <input autocomplete="off" class="form-control" id="message-input" placeholder="Type your message..."
+               type="text">
+        <button id="send-btn" type="submit">
+            <i class="fa-solid fa-paper-plane"></i>
+        </button>
+    </form>
+
+</div>
+
+
 <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.js}" type="text/javascript"></script>
 <script th:src="@{/js/user-popup-menu.js}" type="text/javascript"></script>
 <script th:src="@{/js/input.js}" type="text/javascript"></script>
@@ -35,6 +72,7 @@
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
 </script>
+<script sec:authorize="hasRole('CLIENT')" th:src="@{/js/chat.js}"></script>
 <th:block layout:fragment="page-scripts"></th:block>
 </body>
 </html>

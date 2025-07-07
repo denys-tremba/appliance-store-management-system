@@ -66,11 +66,8 @@ public class Order {
     }
 
     public void approve() {
-        if (state.equals(OrderState.WAITING_FOR_COMPLETION)) {
-            throw new OrderException("You can not approve uncompleted order");
-        }
-        if (state.equals(OrderState.DISAPPROVED)) {
-            throw new OrderException("You can not approve already disapproved order");
+        if (!state.equals(OrderState.WAITING_FOR_APPROVAL)) {
+            throw new OrderException("You can not approve %s order".formatted(state));
         }
 
 
@@ -79,14 +76,24 @@ public class Order {
     }
 
     public void disapprove() {
-        if (state.equals(OrderState.WAITING_FOR_COMPLETION)) {
-            throw new OrderException("You can not disapprove uncompleted order");
+        if (!state.equals(OrderState.WAITING_FOR_APPROVAL)) {
+            throw new OrderException("You can not disapprove %s order".formatted(state));
         }
-        if (state.equals(OrderState.APPROVED)) {
-            throw new OrderException("You can not disapprove already approved order");
-        }
-
 
         state = OrderState.DISAPPROVED;
+    }
+
+    public void revoke() {
+        if (!state.equals(OrderState.WAITING_FOR_APPROVAL)) {
+            throw new OrderException("You can not revoke %s order".formatted(state));
+        }
+        state = OrderState.REVOKED;
+    }
+
+    public void clear() {
+        if (orderLineItems.isEmpty()) {
+            throw new OrderException("Order is already empty");
+        }
+        this.orderLineItems.clear();
     }
 }

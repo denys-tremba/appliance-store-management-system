@@ -51,7 +51,7 @@ public class CompleteOrderController {
         redirectAttributes.addFlashAttribute("message", "Order is completed");
         completeOrderService.completeOrder();
         sessionStatus.setComplete();
-        return "redirect:/orders/current";
+        return "redirect:/orders/client";
     }
 
     @PostMapping("/lineItem/enter")
@@ -61,6 +61,12 @@ public class CompleteOrderController {
         completeOrderService.enterLineItem(form.getApplianceId(), form.getNumbers());
         redirectAttributes.addFlashAttribute("message", "Appliance " + form.getApplianceId() + " is entered");
         return "redirect:/orders/current";
+    }
+    @PostMapping("/{id}/revoke")
+    public String revoke(@PathVariable("id") Long id, RedirectAttributes redirectAttributes, @ModelAttribute("orderService") CompleteOrderService completeOrderService) {
+        completeOrderService.revoke(id);
+        redirectAttributes.addFlashAttribute("message", "Order is revoked");
+        return "redirect:/orders/client";
     }
     @PostMapping("/lineItem/{id}/edit")
     public String updateLineItemQuantity(@PathVariable("id") int id,
