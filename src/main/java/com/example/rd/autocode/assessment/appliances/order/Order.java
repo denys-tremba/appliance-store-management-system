@@ -51,7 +51,7 @@ public class Order {
         return orderLineItems.stream().map(OrderLineItem::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public void addRow(Appliance appliance, Long number) {
+    public void enterLineItem(Appliance appliance, Long number) {
         if (state.equals(OrderState.WAITING_FOR_APPROVAL)) {
             throw new OrderException("Adding line item is failed due to order is completed");
         }
@@ -95,5 +95,13 @@ public class Order {
             throw new OrderException("Order is already empty");
         }
         this.orderLineItems.clear();
+    }
+
+    public void removeLineItemAt(int index) {
+        orderLineItems.remove(index);
+    }
+
+    public void updateLineItemQuantity(int index, Long quantity) {
+        orderLineItems.get(index).setQuantity(quantity);
     }
 }

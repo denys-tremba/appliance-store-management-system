@@ -14,7 +14,7 @@
         <append>true</append>
         <immediateFlush>true</immediateFlush>
         <encoder class="PatternLayoutEncoder">
-            <pattern>%-4relative [%thread] %-5level %logger{35} -%kvp- %msg%n</pattern>
+            <pattern>%d %-4relative [%thread] %-5level %logger{35} -%kvp- %msg%n</pattern>
         </encoder>
     </appender>
     <appender name="BUSINESS_EVENTS_FILE_APPENDER" class="FileAppender">
@@ -22,7 +22,7 @@
         <append>true</append>
         <immediateFlush>true</immediateFlush>
         <encoder class="PatternLayoutEncoder">
-            <pattern>%-4relative [%thread] %-5level %logger{35} -%kvp- %msg%n</pattern>
+            <pattern>%d %-4relative [%thread] %-5level %logger{35} -%kvp- %msg%n</pattern>
         </encoder>
     </appender>
     <appender name="AI_FILE_APPENDER" class="FileAppender">
@@ -38,7 +38,7 @@
         <append>true</append>
         <immediateFlush>true</immediateFlush>
         <encoder class="PatternLayoutEncoder">
-            <pattern>%-4relative [%thread] %-5level %logger{35} -%kvp- %msg%n</pattern>
+            <pattern>%d %-4relative [%thread] %-5level %logger{35} -%kvp- %msg%n</pattern>
         </encoder>
     </appender>
     <springProperty name="host" source="spring.mail.host"/>
@@ -77,6 +77,6 @@
     </logger>
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
-        <appender-ref ref="EMAIL" />
+<!--        <appender-ref ref="EMAIL" />-->
     </root>
 </configuration>

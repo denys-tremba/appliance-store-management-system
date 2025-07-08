@@ -26,10 +26,15 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             // 3. Construct the URL and fetch data from your backend
             const query = encodeURIComponent(userInput);
-            const url = `/chat/ai?prompt=${query}`;
+            const url = `/orders/current/chat/ai?prompt=${query}`;
             console.log(`Fetching from: ${url}`); // For debugging
 
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                method: 'GET',
+                credentials: 'include'
+            });
+            console.log("headers");
+            response.headers.forEach((value, key, parent)=> console.log(`${key} " ${value}`));
 
             if (!response.ok) {
                 // Handle HTTP errors like 404 or 500
@@ -66,7 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- NEW: Function to fetch and display chat history ---
     async function loadChatHistory() {
         try {
-            const response = await fetch('/chat/memory');
+            const response = await fetch('/orders/current/chat/memory',{
+                credentials: 'include'
+            });
             if (!response.ok) {
                 throw new Error(`History fetch failed with status: ${response.status}`);
             }
