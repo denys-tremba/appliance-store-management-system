@@ -3,10 +3,9 @@ package com.example.rd.autocode.assessment.appliances.misc.infrastructure.securi
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-public class JwtLoginConfigurer extends AbstractHttpConfigurer<JwtLoginConfigurer, HttpSecurity> {
+public class JwtConfigurer extends AbstractHttpConfigurer<JwtConfigurer, HttpSecurity> {
 
     @Override
     public void init(HttpSecurity builder) throws Exception {
@@ -18,8 +17,7 @@ public class JwtLoginConfigurer extends AbstractHttpConfigurer<JwtLoginConfigure
     public void configure(HttpSecurity builder) throws Exception {
         super.configure(builder);
         ApplicationContext context = builder.getSharedObject(ApplicationContext.class);
-        JwtService jwtService = context.getBean(JwtService.class);
-        UserDetailsService detailsService = context.getBean(UserDetailsService.class);
-        builder.addFilterBefore(new JwtVerifierFilter(jwtService, detailsService), UsernamePasswordAuthenticationFilter.class);
+        builder.addFilterBefore(context.getBean(JwtAccessFilter.class), UsernamePasswordAuthenticationFilter.class);
+        builder.addFilterBefore(context.getBean(JwtRefreshFilter.class), JwtAccessFilter.class);
     }
 }

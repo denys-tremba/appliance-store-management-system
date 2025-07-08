@@ -16,7 +16,7 @@
 </head>
 <body>
 <th:block th:insert="~{misc/fragments/menunavy::navy}"></th:block>
-<div class="container p-1">
+<div class="container px-1">
     <th:block th:if="${message}" th:insert="~{misc/fragments/alert :: success(message=${message},type='success')}"></th:block>
     <th:block th:if="${error}" th:insert="~{misc/fragments/alert :: success(message=${error},type='danger')}"></th:block>
     <th:block th:if="${warning}" th:insert="~{misc/fragments/alert :: success(message=${warning},type='warning')}"></th:block>

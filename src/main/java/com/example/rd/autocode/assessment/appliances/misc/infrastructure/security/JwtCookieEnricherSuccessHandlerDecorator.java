@@ -2,7 +2,6 @@ package com.example.rd.autocode.assessment.appliances.misc.infrastructure.securi
 
 import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -11,23 +10,20 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import java.io.IOException;
-import java.time.Duration;
 
 @RequiredArgsConstructor
 @Slf4j
 public class JwtCookieEnricherSuccessHandlerDecorator implements AuthenticationSuccessHandler {
     private final AuthenticationSuccessHandler delegate;
     private final JwtService jwtService;
+    private final JwtCookieFactory jwtCookieFactory;
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        String compactForm;
         try {
-            Duration duration = Duration.ofDays(1);
-            compactForm = jwtService.create(authentication.getName(), duration.toMillis());
-            Cookie cookie = new Cookie("jwt-auth", compactForm);
-            cookie.setMaxAge((int) duration.toSeconds());
-            cookie.setHttpOnly(true);
-            response.addCookie(cookie);
+            String compactFormAccess = jwtService.createToken(authentication.getName());
+            String compactFormRefresh = jwtService.createRefreshToken(authentication.getName());
+            response.addCookie(jwtCookieFactory.createForAccessToken(compactFormAccess));
+            response.addCookie(jwtCookieFactory.createForRefreshToken(compactFormRefresh));
         } catch (JOSEException e) {
             log.error("Error while creating jwt after successful authentication");
         }

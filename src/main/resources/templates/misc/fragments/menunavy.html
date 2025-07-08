@@ -1,10 +1,10 @@
 <th:block xmlns:th="http://www.thymeleaf.org">
     <nav class="navbar sticky-top navbar-expand-sm bg-primary navbar-dark" th:fragment="navy">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/static">DenysShop</a>
+            <a class="navbar-brand" th:href="@{/}">DenysShop</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav">
-                    <li class="nav-item" sec:authorize="isFullyAuthenticated()">
+                    <li class="nav-item">
                         <a class="nav-link"
                            th:classappend="${#ctx.getExchange().getRequest().getRequestURI()} eq '/manufacturers' ? 'active' : ''"
                            th:href="@{/manufacturers}" th:text="#{manufacturer.action.list}"></a>
@@ -14,7 +14,7 @@
                            th:classappend="${#ctx.getExchange().getRequest().getRequestURI()} eq '/users' ? 'active' : ''"
                            th:href="@{/users}" th:text="#{user.action.list}"></a>
                     </li>
-                    <li class="nav-item" sec:authorize="isFullyAuthenticated()">
+                    <li class="nav-item">
                         <a class="nav-link"
                            th:classappend="${#ctx.getExchange().getRequest().getRequestURI()} eq '/appliances' ? 'active' : ''"
                            th:href="@{/appliances}" th:text="#{appliance.action.list}"></a>

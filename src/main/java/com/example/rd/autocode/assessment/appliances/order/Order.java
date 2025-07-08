@@ -51,7 +51,7 @@ public class Order {
         return orderLineItems.stream().map(OrderLineItem::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public void addRow(Appliance appliance, Long number) {
+    public void enterLineItem(Appliance appliance, Long number) {
         if (state.equals(OrderState.WAITING_FOR_APPROVAL)) {
             throw new OrderException("Adding line item is failed due to order is completed");
         }

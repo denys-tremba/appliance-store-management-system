@@ -1,6 +1,7 @@
 package com.example.rd.autocode.assessment.appliances.misc.infrastructure.security;
 
-import com.example.rd.autocode.assessment.appliances.order.Order;
+import com.example.rd.autocode.assessment.appliances.order.complete.CompleteOrderService;
+import com.example.rd.autocode.assessment.appliances.order.complete.CompleteOrderSessionHandler;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +21,8 @@ public class JwtCookieOrderHandlerInterceptor implements HandlerInterceptor {
     public static final String ORDER_COOKIE = "jwt-order";
     private final JwtService jwtService;
     private final ApplicationContext applicationContext;
+    private final CompleteOrderService completeOrderService;
+    private final JwtCookieFactory jwtCookieFactory;
 
 
     @Override
@@ -27,9 +30,12 @@ public class JwtCookieOrderHandlerInterceptor implements HandlerInterceptor {
 
         List<Cookie> cookies = Arrays.asList(request.getCookies());
 
-        Optional<Cookie> orderHolder = cookies.stream().filter(c -> c.getName().equals(ORDER_COOKIE)).findAny();
+        Optional<Cookie> orderHolder = jwtCookieFactory.findForAccess(cookies);
+
         if (orderHolder.isEmpty()) {
-            request.setAttribute("order", new Order());
+            CompleteOrderSessionHandler sessionHandler = new CompleteOrderSessionHandler();
+            sessionHandler.setCompleteOrderService(completeOrderService);
+            request.setAttribute("sessionHandler", sessionHandler);
             return true;
         }
 
@@ -38,23 +44,18 @@ public class JwtCookieOrderHandlerInterceptor implements HandlerInterceptor {
 
         String compact = cookie.getValue();
 
-        Order order = jwtService.order(compact);
+        CompleteOrderSessionHandler sessionHandler = jwtService.sessionHandler(compact);
+        sessionHandler.setCompleteOrderService(completeOrderService);
 
-        request.setAttribute("order", order);
+        request.setAttribute("sessionHandler", sessionHandler);
         return true;
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        Order order = (Order) request.getAttribute("order");
-        String compactForm = jwtService.create(order);
-        Cookie cookie = new Cookie(ORDER_COOKIE, compactForm);
-        cookie.setPath("/orders/current");
+        CompleteOrderSessionHandler sessionHandler = (CompleteOrderSessionHandler) request.getAttribute("sessionHandler");
+        String compactForm = jwtService.createToken(sessionHandler);
+        Cookie cookie = jwtCookieFactory.createForOrder(compactForm);
         response.addCookie(cookie);
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-
     }
 }

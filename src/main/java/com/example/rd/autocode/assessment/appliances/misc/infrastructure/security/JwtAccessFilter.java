@@ -1,7 +1,7 @@
 package com.example.rd.autocode.assessment.appliances.misc.infrastructure.security;
 
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jwt.proc.BadJWTException;
+import com.nimbusds.jwt.proc.ExpiredJWTException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -27,9 +28,11 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class JwtVerifierFilter extends OncePerRequestFilter {
+public class JwtAccessFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final RequestCache requestCache;
+    private final JwtCookieFactory jwtCookieFactory;
     @SneakyThrows
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Cookie[] cookies = request.getCookies();
@@ -38,7 +41,7 @@ public class JwtVerifierFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        Optional<Cookie> jwtHolder =Arrays.stream(cookies).filter(c -> c.getName().equals("jwt-auth")).findAny();
+        Optional<Cookie> jwtHolder =Arrays.stream(cookies).filter(c -> c.getName().equals(JwtCookieFactory.JWT_ACCESS)).findAny();
         if (jwtHolder.isEmpty()) {
             log.debug("Token is absent");
             filterChain.doFilter(request, response);
@@ -63,14 +66,22 @@ public class JwtVerifierFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         } catch (ParseException | JOSEException e) {
-            log.debug("Token failed verification");
+            log.error("Unexpected access token processing failure");
             filterChain.doFilter(request, response);
             return;
-        } catch (BadJWTException e) {
-            log.debug("Token is expired");
-            filterChain.doFilter(request, response);
+        } catch (ExpiredJWTException e) {
+            commenceToRefreshEndpoint(request, response, filterChain);
             return;
         }
+    }
+
+    private void commenceToRefreshEndpoint(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+        log.debug("Access token is expired. Saving request to cache to replay it later");
+        requestCache.saveRequest(request, response);
+        log.debug("Deleting access token cookie");
+        Cookie cookie = jwtCookieFactory.createDeletedForAccessToken();
+        response.addCookie(cookie);
+        response.sendRedirect(JwtRefreshFilter.JWT_REFRESH_PATH);
     }
 
 }

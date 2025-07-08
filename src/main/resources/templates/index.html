@@ -9,9 +9,146 @@
 </head>
 <body>
 <div layout:fragment="main-content">
-<!--    <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-html="true" title="<em>Tooltip</em> <u>with</u> <b>HTML</b>">-->
-<!--        Tooltip with HTML-->
-<!--    </button>-->
+
+    <!--
+      MODERN STYLES FOR THE APPLIANCE STORE
+      For a real project, you'd move this to its own .css file.
+    -->
+    <style>
+        :root {
+            --primary-color: #00A99D; /* A modern, friendly teal */
+            --dark-text: #2c3e50;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            color: var(--dark-text);
+        }
+
+        /* --- Hero Section --- */
+        .hero-section {
+            position: relative;
+            color: white;
+            text-align: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1556911220-bff31c812dba?q=80&w=2940') no-repeat center center;
+            background-size: cover;
+
+            /* === KEY CHANGES FOR FULL HEIGHT === */
+            /* 1. Set minimum height to 100% of the viewport height */
+            min-height: 100vh;
+
+            /* 2. Use Flexbox to perfectly center the content */
+            display: flex;
+            align-items: center;     /* Vertical alignment */
+            justify-content: center; /* Horizontal alignment */
+            /* ================================== */
+        }
+        .hero-section h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+        }
+        .hero-section .lead {
+            font-size: 1.5rem;
+            max-width: 700px;
+            margin: 1rem auto 2rem auto;
+        }
+        .hero-section .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .hero-section .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* --- Section Styling --- */
+        .section-title {
+            margin-top: 5rem; /* Increased margin to give space below hero */
+            margin-bottom: 3rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--dark-text);
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: var(--primary-color);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        /* --- Category Card with Photos --- */
+        .category-card {
+            background-color: white;
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+        }
+        .category-card .card-img-top {
+            height: 200px;
+            object-fit: cover;
+        }
+        .category-card .card-body {
+            padding: 25px;
+        }
+        .category-card .card-title {
+            color: var(--dark-text);
+            font-weight: 600;
+        }
+
+        /* --- Testimonial Section --- */
+        .testimonial-card {
+            background-color: #ffffff;
+            border-left: 5px solid var(--primary-color);
+            padding: 25px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-radius: 0 8px 8px 0;
+        }
+        .testimonial-card p {
+            font-style: italic;
+            margin-bottom: 0.5rem;
+        }
+        .testimonial-card footer {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* --- Final CTA Section --- */
+        .final-cta {
+            background-color: var(--light-bg);
+            padding: 4rem 0;
+            margin-top: 4rem;
+            border-radius: 15px;
+        }
+    </style>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 data-aos="fade-down">The Modern Heart of Your Home</h1>
+            <p class="lead" data-aos="fade-up" data-aos-delay="100">
+                Discover appliances where innovation meets reliability. Upgrade your kitchen and laundry with the performance and efficiency you deserve.            </p>
+            <a th:href="@{/appliances}" class="btn btn-primary rounded-pill" data-aos="fade-up" data-aos-delay="200">
+                Explore Our Collection
+            </a>
+        </div>
+    </section>
 </div>
 </body>
 </html>
