@@ -48,7 +48,7 @@ public class Order {
 
 
     public BigDecimal getAmount() {
-        return orderLineItems.stream().map(OrderLineItem::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return orderLineItems.stream().map(OrderLineItem::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public void enterLineItem(Appliance appliance, Long number) {

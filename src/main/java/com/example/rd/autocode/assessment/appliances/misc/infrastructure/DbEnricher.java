@@ -4,6 +4,7 @@ import com.example.rd.autocode.assessment.appliances.appliance.ApplianceReposito
 import com.example.rd.autocode.assessment.appliances.appliance.find.FindApplianceService;
 import com.example.rd.autocode.assessment.appliances.appliance.manage.ManageApplianceService;
 import com.example.rd.autocode.assessment.appliances.misc.infrastructure.ai.AiAssistant;
+import com.example.rd.autocode.assessment.appliances.user.admin.manageUsers.Admin;
 import com.example.rd.autocode.assessment.appliances.user.client.signUp.Client;
 import com.example.rd.autocode.assessment.appliances.user.employee.ConstantEmployeeSelectionStrategy;
 import com.example.rd.autocode.assessment.appliances.user.employee.signUp.Employee;
@@ -42,11 +43,11 @@ public class DbEnricher implements CommandLineRunner, BeanPostProcessor {
         Client bob = userRepository.save(Client.create("Bob", "bob@gmail.com", passwordEncoder.encode("MmX55w1>C0`:"), "4916830689174006"));
         Employee oliver = userRepository.save(Employee.create("Oliver", "oliver@gmail.com", passwordEncoder.encode(">0w.y94Gd6,,"), "Laundry"));
         Employee denys = userRepository.save(Employee.create("Denys", "denys.tremba.trying@gmail.com", passwordEncoder.encode("5V38&62e!Lv^"), "Air Quality"));
+        userRepository.save(Admin.create());
         constantEmployeeSelectionStrategy.setEmployee(denys);
 
         applianceRepository.findAll().forEach(a-> vectorStore.add(Collections.singletonList(ManageApplianceService.convertToDoc(a))));
 
-//        List<Appliance> result = findApplianceService.semanticSearchAllByDescriptionAndCategory("air", Category.COMPUTING_MOBILE, budget).getContent();
 
     }
 }

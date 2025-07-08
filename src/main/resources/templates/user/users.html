@@ -25,12 +25,20 @@
             <td th:text="${user.roleName}"/>
             <td th:text="${user.locked}"/>
             <td>
-                <div>
+                <div th:unless="${user.locked}">
                     <form method="post" th:action="@{users/}+${user.id}+@{/lock}">
                     <button class="btn btn-primary">
                           <i class="fa fa-minus"></i>
                           Lock
                     </button>
+                    </form>
+                </div>
+                <div th:if="${user.locked}">
+                    <form method="post" th:action="@{users/}+${user.id}+@{/unlock}">
+                        <button class="btn btn-primary">
+                            <i class="fa fa-plus"></i>
+                            Unlock
+                        </button>
                     </form>
                 </div>
             </td>

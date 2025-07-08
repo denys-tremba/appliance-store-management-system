@@ -9,6 +9,7 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.vectorstore.filter.Filter;
 import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -25,8 +26,12 @@ import java.util.Optional;
 public class FindApplianceService {
     private final VectorStore vectorStore;
     private final ApplianceRepository applianceRepository;
+    @Value("${search.threshold:0.7}")
+    private double threshold;
+    @Value("${search.topK:4}")
+    private int topK;
     public Page<Appliance> semanticSearchAllByDescription(String description) {
-        SearchRequest searchRequest = SearchRequest.builder().query(description).similarityThreshold(0.7d).topK(4).build();
+        SearchRequest searchRequest = SearchRequest.builder().query(description).similarityThreshold(threshold).topK(topK).build();
         List<Document> documents = vectorStore.similaritySearch(searchRequest);
         List<Appliance> ids = documents
                 .stream()
@@ -35,8 +40,6 @@ public class FindApplianceService {
                 .flatMap(Optional::stream)
                 .toList();
         PageImpl<Appliance> page = new PageImpl<>(ids, Pageable.unpaged(), ids.size());
-//        List<Long> ids = documents.stream().map(d -> ((Long) d.getMetadata().get("id"))).toList();
-//        PageImpl<Appliance> page = new PageImpl<>(applianceRepository.findAllById(ids), Pageable.unpaged(), ids.size());
         return page;
     }
 
@@ -45,8 +48,8 @@ public class FindApplianceService {
         Filter.Expression expression = b.and(b.eq("category", category.name()), b.lte("price", budget.longValue())).build();
         SearchRequest searchRequest = SearchRequest.builder()
                 .query(description)
-//                .similarityThreshold(0.85d)
-//                .topK(10)
+                .similarityThreshold(threshold)
+                .topK(topK)
                 .filterExpression(expression)
                 .build();
         List<Document> documents = vectorStore.similaritySearch(searchRequest);
@@ -57,8 +60,6 @@ public class FindApplianceService {
                 .flatMap(Optional::stream)
                 .toList();
         PageImpl<Appliance> page = new PageImpl<>(ids, Pageable.unpaged(), ids.size());
-//        List<Long> ids = documents.stream().map(d -> ((Long) d.getMetadata().get("id"))).toList();
-//        PageImpl<Appliance> page = new PageImpl<>(applianceRepository.findAllById(ids), Pageable.unpaged(), ids.size());
         return page;
     }
 }

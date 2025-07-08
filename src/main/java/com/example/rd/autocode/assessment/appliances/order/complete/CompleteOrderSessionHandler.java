@@ -43,4 +43,8 @@ public class CompleteOrderSessionHandler {
     public void removeOrderLineItemsWithApplianceId(Long applianceId) {
         order.getOrderLineItems().removeIf(li -> li.getAppliance().getId().equals(applianceId));
     }
+
+    public void revoke(Long id) {
+        completeOrderService.revoke(id);
+    }
 }

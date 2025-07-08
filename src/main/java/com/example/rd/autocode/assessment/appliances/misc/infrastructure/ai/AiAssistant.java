@@ -28,6 +28,7 @@ public class AiAssistant {
     private final ChatClient chatClient;
     private final VectorStore vectorStore;
     private final ChatMemory chatMemory;
+    private final AiTools aiTools;
 
     @SneakyThrows
     public AiAssistant(ChatClient.Builder builder, VectorStore vectorStore, AiTools aiTools, ChatMemory chatMemory) {
@@ -53,11 +54,12 @@ public class AiAssistant {
                 .build();
         SimpleLoggerAdvisor simpleLoggerAdvisor = new SimpleLoggerAdvisor(Ordered.LOWEST_PRECEDENCE);
         chatClient = builder
-                .defaultTools(aiTools)
+//                .defaultTools(aiTools)
                 .defaultSystem(new ClassPathResource("ai/system.st"))
-                .defaultAdvisors(ragAdvisor, simpleLoggerAdvisor, chatMemoryAdvisor)
+                .defaultAdvisors(simpleLoggerAdvisor, chatMemoryAdvisor, ragAdvisor)
                 .build();
         this.vectorStore = vectorStore;
+        this.aiTools = aiTools;
     }
 
     public String promptForResponse(String query, User user, Map<String, Object> context) {
@@ -65,6 +67,7 @@ public class AiAssistant {
                 .user(query)
                 .advisors(a->a.param(ChatMemory.CONVERSATION_ID, user.getUsername()))
                 .toolContext(context)
+                .tools(aiTools)
                 .call()
                 .content();
     }

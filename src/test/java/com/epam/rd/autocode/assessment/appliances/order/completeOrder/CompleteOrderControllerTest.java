@@ -4,10 +4,13 @@
 //import com.example.rd.autocode.assessment.appliances.order.Order;
 //import com.example.rd.autocode.assessment.appliances.order.complete.CompleteOrderController;
 //import com.example.rd.autocode.assessment.appliances.order.complete.CompleteOrderService;
+//import com.example.rd.autocode.assessment.appliances.user.manageAccount.ManageAccountController;
 //import org.hamcrest.Matchers;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+//import org.springframework.context.annotation.ComponentScan;
+//import org.springframework.context.annotation.FilterType;
 //import org.springframework.security.test.context.support.WithMockUser;
 //import org.springframework.test.context.bean.override.mockito.MockitoBean;
 //import org.springframework.test.web.servlet.assertj.MockMvcTester;
@@ -20,7 +23,8 @@
 //import static org.mockito.Mockito.when;
 //import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 //
-//@WebMvcTest(controllers = CompleteOrderController.class)
+//@WebMvcTest(controllers = CompleteOrderController.class, excludeFilters = {@ComponentScan.Filter(type = FilterType.REGEX, pattern = "com\\.example\\.rd\\.autocode\\.assessment\\.appliances\\.misc\\.infrastructure\\..*")})
+//
 //@WithMockUser(roles = "CLIENT")
 //class CompleteOrderControllerTest {
 //    @Autowired
@@ -30,20 +34,7 @@
 //    CompleteOrderService completeOrderService;
 //    Order order = new OrdersBuilder().build();
 //
-//    @Test
-//    void getCurrentOrder() {
-//        when(completeOrderService.getOgetCurrentOrder()).thenReturn(order);
 //
-//        mvcTester.get()
-//                .uri("/orders/current")
-//                .sessionAttr("orderService", completeOrderService)
-//                .exchange()
-//                .assertThat()
-//                .hasViewName("order/editOrder")
-//                .hasStatusOk()
-//                .model()
-//                .hasEntrySatisfying("order", matching(is(order)));
-//    }
 //
 //    @Test
 //    void clearOrder() {

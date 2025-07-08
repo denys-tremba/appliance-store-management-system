@@ -68,8 +68,8 @@ public class JwtRefreshFilter extends OncePerRequestFilter {
         log.debug("Processing invocation of {}", this.getClass());
 
         try {
-            String username = jwtService.username(compactForm);
-            String accessJwt = jwtService.createToken(username);
+            String username = jwtService.parseUsername(compactForm);
+            String accessJwt = jwtService.createAccessToken(username);
             log.debug("Created access token from refresh for {}", this.getClass());
             response.addCookie(jwtCookieFactory.createForAccessToken(accessJwt));
             log.debug("Setting refresh token into cookie for {}", username);

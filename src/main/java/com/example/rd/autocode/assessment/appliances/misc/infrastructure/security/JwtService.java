@@ -1,6 +1,5 @@
 package com.example.rd.autocode.assessment.appliances.misc.infrastructure.security;
 
-import com.example.rd.autocode.assessment.appliances.order.Order;
 import com.example.rd.autocode.assessment.appliances.order.complete.CompleteOrderSessionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,47 +22,26 @@ import java.util.Date;
 @Component
 @RequiredArgsConstructor
 public class JwtService {
-    @Value("${jwt.shared-secret}")
+    @Value("${jwt.shared-secret:dummy}")
     String sharedSecret;
     @Value("${jwt.access.exp}")
     private Duration accessDuration;
     @Value("${jwt.refresh.exp}")
     private Duration refreshDuration;
+    @Value("${jwt.order.exp}")
+    private Duration orderDuration;
     private final ObjectMapper objectMapper;
 
-    public Order order(String compactForm) throws ParseException, JsonProcessingException {
-        SignedJWT jwt = SignedJWT.parse(compactForm);
-        Order order = objectMapper.readValue(jwt.getJWTClaimsSet().getClaimAsString("order"), Order.class);
-        return order;
 
-    }
-
-    public String createToken(Order order) throws JsonProcessingException, JOSEException {
-        JWSSigner signer = new MACSigner(sharedSecret);
-
-        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .expirationTime(new Date(new Date().getTime() + 60 * 1000))
-                .claim("order", objectMapper.writeValueAsString(order))
-                .build();
-
-        SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
-
-        signedJWT.sign(signer);
-
-
-
-        String jwt = signedJWT.serialize();
-
-        return jwt;
-    }
-
-
-    public String username(String compactForm) throws ParseException, JOSEException, BadJWTException {
+    public String parseUsername(String compactForm) throws ParseException, JOSEException, BadJWTException {
         SignedJWT jwt = SignedJWT.parse(compactForm);
 
         JWSVerifier verifier = new MACVerifier(sharedSecret);
 
         boolean verification = jwt.verify(verifier);
+        if (!verification) {
+            throw new JOSEException();
+        }
         JWTClaimsSet claims = jwt.getJWTClaimsSet();
         DefaultJWTClaimsVerifier<SecurityContext> claimsVerifier = new DefaultJWTClaimsVerifier<>();
         claimsVerifier.verify(claims, null);
@@ -72,7 +50,7 @@ public class JwtService {
         return username;
     }
 
-    public String createToken(String username) throws JOSEException {
+    public String createAccessToken(String username) throws JOSEException {
         JWSSigner signer = new MACSigner(sharedSecret);
         JWTClaimsSet claims = new JWTClaimsSet.Builder()
                 .subject(username)
@@ -84,11 +62,11 @@ public class JwtService {
         return compactForm;
     }
 
-    public String createToken(CompleteOrderSessionHandler sessionHandler) throws JOSEException, JsonProcessingException {
+    public String createOrderToken(CompleteOrderSessionHandler sessionHandler) throws JOSEException, JsonProcessingException {
         JWSSigner signer = new MACSigner(sharedSecret);
 
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .expirationTime(new Date(new Date().getTime() + 60 * 60 * 1000))
+                .expirationTime(new Date(new Date().getTime() + orderDuration.toMillis()))
                 .claim("sessionHandler", objectMapper.writeValueAsString(sessionHandler))
                 .build();
 
@@ -103,7 +81,7 @@ public class JwtService {
         return jwt;
     }
 
-    public CompleteOrderSessionHandler sessionHandler(String compactForm) throws ParseException, JsonProcessingException {
+    public CompleteOrderSessionHandler parseSessionHandler(String compactForm) throws ParseException, JsonProcessingException {
         SignedJWT jwt = SignedJWT.parse(compactForm);
         CompleteOrderSessionHandler sessionHandler = objectMapper.readValue(jwt.getJWTClaimsSet().getClaimAsString("sessionHandler"), CompleteOrderSessionHandler.class);
         return sessionHandler;

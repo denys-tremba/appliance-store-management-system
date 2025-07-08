@@ -45,7 +45,7 @@ public class ChatController {
                                     HttpServletResponse response) throws JOSEException, JsonProcessingException {
         Map<String, Object> context = Map.of("sessionHandler", sessionHandler);
         String answer = aiAssistant.promptForResponse(prompt, user, context);
-        String compactForm = jwtService.createToken(sessionHandler);
+        String compactForm = jwtService.createOrderToken(sessionHandler);
         Cookie cookie = jwtCookieFactory.createForOrder(compactForm);
         response.addCookie(cookie);
         return answer;

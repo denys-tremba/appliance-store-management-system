@@ -41,7 +41,7 @@ public class JwtCookieOrderHandlerInterceptor implements HandlerInterceptor {
 
         String compact = cookie.getValue();
 
-        CompleteOrderSessionHandler sessionHandler = jwtService.sessionHandler(compact);
+        CompleteOrderSessionHandler sessionHandler = jwtService.parseSessionHandler(compact);
         sessionHandler.setCompleteOrderService(completeOrderService);
 
         request.setAttribute("sessionHandler", sessionHandler);
@@ -51,7 +51,7 @@ public class JwtCookieOrderHandlerInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         CompleteOrderSessionHandler sessionHandler = (CompleteOrderSessionHandler) request.getAttribute("sessionHandler");
-        String compactForm = jwtService.createToken(sessionHandler);
+        String compactForm = jwtService.createOrderToken(sessionHandler);
         Cookie cookie = jwtCookieFactory.createForOrder(compactForm);
         response.addCookie(cookie);
     }

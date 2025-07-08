@@ -65,12 +65,13 @@ public class CompleteOrderService {
 
     @Transactional
     public void completeOrder(Order order) {
-//        Order managed = entityManager.merge(order);
-//        Order fetched = orderRepository.findById(order.getId()).orElseThrow(OrderNotFound::new);
-//        managed.complete();
-//        orderRepository.save(order);
         order.complete();
         Order managed = orderRepository.save(order);
         eventPublisher.publishEvent(new OrderCompleted(managed));
+    }
+
+    @Transactional
+    public void revoke(Long id) {
+        findById(id).revoke();
     }
 }

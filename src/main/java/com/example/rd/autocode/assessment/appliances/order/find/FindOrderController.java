@@ -66,18 +66,21 @@ public class FindOrderController {
     }
 
     @GetMapping(path = "/admin", params = "criteria")
+    @PreAuthorize("hasRole('ADMIN')")
     public String findAllByCriteriaForAdmin(@SortDefault.SortDefaults({@SortDefault("state"), @SortDefault("createdAt"), @SortDefault("id")}) Pageable pageable,
                                             Model model, AdminOrderSearchForm form, @AuthenticationPrincipal User user) {
         return doFindAllByCriteria(pageable, model, form, "admin");
     }
 
     @GetMapping(path = "/client", params = "criteria")
+    @PreAuthorize("hasRole('CLIENT')")
     public String findAllByCriteriaForClient(@SortDefault.SortDefaults({@SortDefault("state"), @SortDefault("createdAt"), @SortDefault("id")}) Pageable pageable,
                                              Model model, ClientOrderSearchForm form, @AuthenticationPrincipal User user) {
         return doFindAllByCriteria(pageable, model, form, user.getUsername());
     }
 
     @GetMapping(path = "/employee", params = "criteria")
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public String findAllByCriteriaForEmployee(@SortDefault.SortDefaults({@SortDefault("state"), @SortDefault("createdAt"), @SortDefault("id")}) Pageable pageable,
                                                Model model, EmployeeOrderSearchForm form, @AuthenticationPrincipal User user) {
         return doFindAllByCriteria(pageable, model, form, user.getUsername());

@@ -49,8 +49,6 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
                         )
                 .headers((headers) -> headers.frameOptions((frame) -> frame.sameOrigin()))
-                // CSRF protection is triggered for POST /logout but GET
-//                .csrf(c->c.ignoringRequestMatchers(PathRequest.toH2Console()))
                 .csrf(c->c.disable())
                 .logout(c->c.deleteCookies(JwtCookieFactory.JWT_ACCESS, JwtCookieFactory.JWT_ORDER, JwtCookieFactory.JWT_REFRESH)
                             .logoutRequestMatcher(logoutRequestMatcher()))
@@ -61,7 +59,7 @@ public class SecurityConfig {
                         .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy())
                         .sessionCreationPolicy(SessionCreationPolicy.NEVER))
                 .authenticationProvider(providerProxy)
-                .authenticationProvider(new AdminAuthenticationProvider())
+//                .authenticationProvider(new AdminAuthenticationProvider())
                 .exceptionHandling(c->c.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
                 .requestCache(c->c.requestCache(requestCache))
                 .with(new JwtConfigurer(), Customizer.withDefaults())
@@ -70,28 +68,31 @@ public class SecurityConfig {
 
     @Bean
     @Profile("prod")
-    SecurityFilterChain securityFilterChain(HttpSecurity http, LoginLimitingAuthProviderProxy providerProxy, OneTimeTokenGenerationSuccessHandler oneTimeTokenGenerationSuccessHandler) throws Exception {
+    SecurityFilterChain prodSecurityFilterChain(HttpSecurity http, LoginLimitingAuthProviderProxy providerProxy, CookieRequestCache requestCache, JwtCookieEnricherSuccessHandlerDecorator successHandler, OneTimeTokenGenerationSuccessHandler oneTimeTokenGenerationSuccessHandler) throws Exception {
         return http
                 .authorizeHttpRequests(c->c
+                        .requestMatchers("/login").permitAll()
                         .requestMatchers(new DispatcherTypeRequestMatcher(DispatcherType.ERROR)).permitAll()
                         .requestMatchers(HttpMethod.GET, "/login/ott/username").permitAll()
-                        .requestMatchers("/clients/signUp", "/employees/signUp").permitAll()
+                        .requestMatchers("/clients/signUp", "/employees/signUp", "/appliances", "/manufacturers", "/").permitAll()
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers((headers) -> headers.frameOptions((frame) -> frame.sameOrigin()))
-                .csrf(c->c.ignoringRequestMatchers(PathRequest.toH2Console()))
-                .formLogin(customizer-> customizer
-                        .loginPage("/login").permitAll()
-                )
-                .oneTimeTokenLogin(c->c.tokenGenerationSuccessHandler(oneTimeTokenGenerationSuccessHandler)
-                        .loginPage("/login"))
-                .oauth2Client(Customizer.withDefaults())
-                // CSRF protection is triggered for POST /logout but GET
-                .logout(c->c.logoutRequestMatcher(logoutRequestMatcher()
-                ))
+                .csrf(c->c.disable())
+                .logout(c->c.deleteCookies(JwtCookieFactory.JWT_ACCESS, JwtCookieFactory.JWT_ORDER, JwtCookieFactory.JWT_REFRESH)
+                        .logoutRequestMatcher(logoutRequestMatcher()))
+                .formLogin(c->c.loginPage("/login")
+                        .successHandler(successHandler)
+                        .loginProcessingUrl("/login"))
+                .sessionManagement(c->c
+                        .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy())
+                        .sessionCreationPolicy(SessionCreationPolicy.NEVER))
                 .authenticationProvider(providerProxy)
+                .exceptionHandling(c->c.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
+                .requestCache(c->c.requestCache(requestCache))
+                .with(new JwtConfigurer(), Customizer.withDefaults())
                 .build();
     }
 
@@ -117,13 +118,6 @@ public class SecurityConfig {
         return successHandler;
     }
 
-    @Bean
-    FilterRegistrationBean<JwtAccessFilter> filterFilterRegistrationBean(JwtAccessFilter jwtAccessFilter) {
-        FilterRegistrationBean<JwtAccessFilter> frb = new FilterRegistrationBean<>(jwtAccessFilter);
-        frb.setEnabled(false);
-        return frb;
-    }
-
 
     @Bean
     DaoAuthenticationProvider daoAuthenticationProvider(PasswordEncoder passwordEncoder, UserDetailsService userDetailsService) {
@@ -142,5 +136,12 @@ public class SecurityConfig {
         return RoleHierarchyImpl.withDefaultRolePrefix()
                 .role("ADMIN").implies("CLIENT", "EMPLOYEE")
                 .build();
+    }
+
+        @Bean
+        FilterRegistrationBean<JwtAccessFilter> accessJwtFilterRegistrationBean(JwtAccessFilter jwtAccessFilter) {
+        FilterRegistrationBean<JwtAccessFilter> frb = new FilterRegistrationBean<>(jwtAccessFilter);
+        frb.setEnabled(false);
+        return frb;
     }
 }

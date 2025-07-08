@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Optional;
+
 @Slf4j
 @RequiredArgsConstructor
 @Component
@@ -33,6 +34,7 @@ public class JwtAccessFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
     private final RequestCache requestCache;
     private final JwtCookieFactory jwtCookieFactory;
+
     @SneakyThrows
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Cookie[] cookies = request.getCookies();
@@ -41,7 +43,7 @@ public class JwtAccessFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        Optional<Cookie> jwtHolder =Arrays.stream(cookies).filter(c -> c.getName().equals(JwtCookieFactory.JWT_ACCESS)).findAny();
+        Optional<Cookie> jwtHolder = Arrays.stream(cookies).filter(c -> c.getName().equals(JwtCookieFactory.JWT_ACCESS)).findAny();
         if (jwtHolder.isEmpty()) {
             log.debug("Token is absent");
             filterChain.doFilter(request, response);
@@ -57,9 +59,10 @@ public class JwtAccessFilter extends OncePerRequestFilter {
 
 
         try {
-            String username = jwtService.username(compactForm);
+            String username = jwtService.parseUsername(compactForm);
+            Authentication auth;
             UserDetails user = userDetailsService.loadUserByUsername(username);
-            Authentication auth = UsernamePasswordAuthenticationToken.authenticated(user, null, user.getAuthorities());
+            auth = UsernamePasswordAuthenticationToken.authenticated(user, null, user.getAuthorities());
             SecurityContext context = SecurityContextHolder.createEmptyContext();
             context.setAuthentication(auth);
             SecurityContextHolder.setContext(context);

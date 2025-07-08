@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 @PreAuthorize("hasRole('ADMIN')")
-@Transactional
+@Transactional(readOnly = false)
 public class ManageUsersController {
     private final UserRepository userRepository;
 
@@ -30,6 +30,12 @@ public class ManageUsersController {
     public String lock(@PathVariable("id") Long id) {
         com.example.rd.autocode.assessment.appliances.user.User user = userRepository.findById(id).orElseThrow();
         user.setLocked(true);
+        return "redirect:/users";
+    }
+    @PostMapping("/{id}/unlock")
+    public String unlock(@PathVariable("id") Long id) {
+        com.example.rd.autocode.assessment.appliances.user.User user = userRepository.findById(id).orElseThrow();
+        user.setLocked(false);
         return "redirect:/users";
     }
 }

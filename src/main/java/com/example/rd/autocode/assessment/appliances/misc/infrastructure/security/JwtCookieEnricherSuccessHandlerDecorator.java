@@ -20,7 +20,7 @@ public class JwtCookieEnricherSuccessHandlerDecorator implements AuthenticationS
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         try {
-            String compactFormAccess = jwtService.createToken(authentication.getName());
+            String compactFormAccess = jwtService.createAccessToken(authentication.getName());
             String compactFormRefresh = jwtService.createRefreshToken(authentication.getName());
             response.addCookie(jwtCookieFactory.createForAccessToken(compactFormAccess));
             response.addCookie(jwtCookieFactory.createForRefreshToken(compactFormRefresh));

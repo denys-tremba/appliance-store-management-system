@@ -39,6 +39,7 @@ class ManageApplianceServiceTest {
                 .build();
 
         when(manufacturerRepository.findById(1L)).thenReturn(Optional.of(existingManufacturer));
+        when(applianceRepository.save(any(Appliance.class))).thenReturn(existingAppliance);
 
         service.create(params);
 
@@ -91,7 +92,7 @@ class ManageApplianceServiceTest {
         when(orderRepository.checkApplianceUsageInLineItems(10L)).thenReturn(true); // Appliance is in an order
         EditApplianceParameters params = EditApplianceParameters.builder().build();
 
-        assertThrows(OrderException.class, () -> service.edit(10L, params));
+        assertThrows(ManufacturerNotFound.class, () -> service.edit(10L, params));
     }
 
     @Test

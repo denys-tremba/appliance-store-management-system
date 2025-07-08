@@ -56,9 +56,6 @@ public class ManageApplianceService {
     @Transactional
     public Appliance edit(Long id, EditApplianceParameters parameters) {
         Appliance appliance = applianceRepository.findById(id).orElseThrow(ApplianceNotFound::new);
-        if (orderRepository.checkApplianceUsageInLineItems(id)) {
-            throw new OrderException("You are not allowed to edit this appliance because of existing order referencing it");
-        }
         Manufacturer manufacturer = manufacturerRepo.findById(parameters.getManufacturer()).orElseThrow(ManufacturerNotFound::new);
         if (parameters.getVersion() != appliance.getVersion()) {
             throw new ObjectOptimisticLockingFailureException(Appliance.class,

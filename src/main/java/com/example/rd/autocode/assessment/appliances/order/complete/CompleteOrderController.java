@@ -53,8 +53,8 @@ public class CompleteOrderController {
         return "redirect:/orders/current";
     }
     @PostMapping("/{id}/revoke")
-    public String revoke(@PathVariable("id") Long id, RedirectAttributes redirectAttributes, @ModelAttribute("orderService") CompleteOrderService completeOrderService) {
-//        completeOrderService.revoke(id);
+    public String revoke(@PathVariable("id") Long id, RedirectAttributes redirectAttributes, @RequestAttribute("sessionHandler") CompleteOrderSessionHandler handler) {
+        handler.revoke(id);
         redirectAttributes.addFlashAttribute("message", "Order is revoked");
         return "redirect:/orders/client";
     }

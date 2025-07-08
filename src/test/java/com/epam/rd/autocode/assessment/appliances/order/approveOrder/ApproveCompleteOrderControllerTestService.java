@@ -5,6 +5,8 @@ import com.example.rd.autocode.assessment.appliances.order.approve.ApproveOrderS
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
@@ -13,7 +15,8 @@ import static org.assertj.core.api.HamcrestCondition.matching;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
-@WebMvcTest(controllers = ApproveOrderController.class)
+@WebMvcTest(controllers = ApproveOrderController.class, excludeFilters = {@ComponentScan.Filter(type = FilterType.REGEX, pattern = "com\\.example\\.rd\\.autocode\\.assessment\\.appliances\\.misc\\.infrastructure\\..*")})
+
 @WithMockUser(roles = "EMPLOYEE")
 class ApproveCompleteOrderControllerTestService {
     @Autowired

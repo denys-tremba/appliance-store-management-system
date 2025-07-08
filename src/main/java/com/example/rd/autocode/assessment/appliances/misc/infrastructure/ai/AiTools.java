@@ -22,13 +22,10 @@ public class AiTools {
     private final FindApplianceService findApplianceService;
 
     @Tool(description = "Enter appliance into order")
-    public void enterLineItem(@ToolParam(description = "client preferences about appliance") String preferences,
-                              @ToolParam(description = "appliance category")  Category category,
-                              @ToolParam(description = "client budget") BigDecimal budget,
+    public void enterLineItem(@ToolParam(description = "Appliance identifier") Long id,
                               ToolContext toolContext) {
-        Appliance appliances = findApplianceService.semanticSearchAllByDescriptionAndCategory(preferences, category, budget).getContent().get(0);
         CompleteOrderSessionHandler sessionHandler = (CompleteOrderSessionHandler) toolContext.getContext().get("sessionHandler");
-        sessionHandler.enterLineItem(appliances.getId(), 1L);
+        sessionHandler.enterLineItem(id, 1L);
     }
     @Tool(description = "Find appliances by client preferences, category and budget")
     public List<Appliance> findAppliances(@ToolParam(description = "client preferences about appliance") String preferences,
@@ -41,7 +38,7 @@ public class AiTools {
     public Set<Category> listCategories() {
         return EnumSet.allOf(Category.class);
     }
-    @Tool(description = "Fetch order details")
+    @Tool(description = "Fetch current order")
     public Order getLineItems(ToolContext toolContext) {
         CompleteOrderSessionHandler sessionHandler = (CompleteOrderSessionHandler) toolContext.getContext().get("sessionHandler");
         return sessionHandler.getOrder();

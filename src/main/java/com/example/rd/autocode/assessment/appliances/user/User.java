@@ -30,4 +30,8 @@ public class User {
     @Column(nullable = false)
     @ColumnDefault("false")
     Boolean locked;
+
+    public static User create(String name, String email, String password) {
+        return new User(null, name, email, password, false);
+    }
 }
