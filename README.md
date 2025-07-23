@@ -1,10 +1,64 @@
-# Appliance store test(Spring Boot)
+# Appliance Order Management System
 
-The purpose of this exercise is to check your knowledge and understanding Spring Boot technology.
+## Use Cases
 
-Duration: **15** hour
+1. **End Order**: Client finds appliances of interest via catalog, enters appliance id (implicitly), quantity. System records order line item and presents appliance description, price, running total. Client ends order.
 
-## Description
+2. **Process Order**: Employee picks completed order among pending ones, either approves or disapproves it.
+
+3. **Appliance Management**: Employee creates / edits / deletes appliance record.
+
+4. **Manufacturer Management**
+
+5. **Register/Login**: User (Client or Employee) enters credentials to register/login himself in the system.
+
+6. **User’s Rights Management**: Admin locks/unlocks User’s account.
+
+---
+
+## Domain Rules
+
+1. Client can have at most a single pending order at a time.
+2. Client cannot enter line items into ended order.
+3. Client cannot complete empty order.
+4. Client can revoke only completed order.
+5. Employee can approve/disapprove only ended order.
+6. Orders are assigned to employees acc. deterministic policy (round robbin by default)
+
+---
+
+## Additional Features
+
+1. Semantic search for appliances.
+2. LLM-based chat support: appliance choice suggestions, order population.
+3. Flexible filtering, sorting of appliances.
+4. Stateless JWT-based:
+   - Authentication (access & refresh token, claims & expiration validation)
+   - Shopping cart tracking
+5. Enforcing strong password creation during registration / edit.
+6. Brute force login attack prevention (limiting failed attempts).
+7. Email notifications on business logic events.
+8. Optimistic locking (preventing lost updates) of appliance details editing.
+9. Primitive statistics visualization: charts (e.g. order count by Employee).
+10. Account deletion (“right to be forgotten”).
+11. UI internationalization.
+
+---
+
+## Technical Details
+
+- Spring Boot
+- Thymeleaf
+- Bootstrap
+- JPA (Hibernate)
+- H2
+- Spring Security
+- Spring AI
+- Lombok
+- Mapstruct
+
+
+## Task description
 
 In this exercise, you will implement an "Appliances shop" using Spring Boot.
 Your application has to imitate work of an online shop.
