@@ -17,9 +17,12 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.Collections;
 
 @Component
@@ -35,6 +38,7 @@ public class DbEnricher implements CommandLineRunner, BeanPostProcessor {
     final ApplianceRepository applianceRepository;
     final AiAssistant aiAssistant;
     final FindApplianceService findApplianceService;
+    final ConfigurableEnvironment environment;
 
     @Override
     public void run(String... args) throws Exception {
@@ -48,6 +52,13 @@ public class DbEnricher implements CommandLineRunner, BeanPostProcessor {
 
         applianceRepository.findAll().forEach(a-> vectorStore.add(Collections.singletonList(ManageApplianceService.convertToDoc(a))));
 
-
+        environment.getPropertySources()
+                .stream()
+                .filter(ps -> ps instanceof MapPropertySource)
+                .map(ps -> ((MapPropertySource) ps).getSource().keySet())
+                .flatMap(Collection::stream)
+                .distinct()
+                .sorted()
+                .forEach(key -> log.info("{}={}", key, environment.getProperty(key)));
     }
 }

@@ -36,8 +36,7 @@ public class EmailOneTimeTokenGenerationSuccessHandler implements OneTimeTokenGe
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setSubject("Your Spring Security One Time Token");
         mailMessage.setText("Use the following link to sign in into the application: " + magicLink);
-//        mailMessage.setTo(email);
-        mailMessage.setTo("denys.tremba.trying@gmail.com");
+        mailMessage.setTo(email);
         this.mailSender.send(mailMessage);
         this.redirectHandler.handle(request, response, oneTimeToken);
     }

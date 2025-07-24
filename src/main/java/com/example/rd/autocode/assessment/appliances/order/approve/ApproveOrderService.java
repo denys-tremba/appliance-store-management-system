@@ -22,14 +22,14 @@ public class ApproveOrderService {
     public void approve(Long id) {
         Order order = findById(id);
         order.approve();
-        eventPublisher.publishEvent(new OrderApprovalDecisionEvent(order));
+        eventPublisher.publishEvent(new OrderApprovalDecisionEvent(order, true));
     }
 
 
     public void disapprove(Long id) {
         Order order = findById(id);
         order.disapprove();
-        eventPublisher.publishEvent(new OrderApprovalDecisionEvent(order));
+        eventPublisher.publishEvent(new OrderApprovalDecisionEvent(order, false));
     }
 
 

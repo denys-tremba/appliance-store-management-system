@@ -22,13 +22,17 @@ import org.thymeleaf.context.Context;
 public class NotificationService {
     TemplateEngine templateEngine;
     JavaMailSender mailSender;
+    EmailPostProcessor emailPostProcessor;
 
 
     @Async
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @EventListener(OrderApprovalDecisionEvent.class)
     public void onCompletion(OrderApprovalDecisionEvent event) {
-        SimpleMailMessage message = createMailMessage(event.order(), "email/approval", "Order approval");
+        Order order = event.order();
+        String templateName = event.isApproved() ? "email/approval" : "email/disapproval";
+        String orderApproval = event.isApproved() ? "Order approval" : "Order disapproval";
+        SimpleMailMessage message = createMailMessage(order.getClient().getEmail(), order, templateName, orderApproval);
         mailSender.send(message);
     }
 
@@ -36,17 +40,18 @@ public class NotificationService {
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @EventListener(OrderCompleted.class)
     public void onCompletion(OrderCompleted event) {
-        SimpleMailMessage message = createMailMessage(event.order(), "email/complete", "Order completion");
+        Order order = event.order();
+        SimpleMailMessage message = createMailMessage(order.getEmployee().getEmail(), order, "email/complete", "Order completion");
         mailSender.send(message);
     }
 
-    private SimpleMailMessage createMailMessage(Order order, String templateName, String subject) {
+    private SimpleMailMessage createMailMessage(String to, Order order, String templateName, String subject) {
         Context context = new Context();
         context.setVariable("order", order);
         String body = templateEngine.process(templateName, context);
         SimpleMailMessage message = new SimpleMailMessage();
         message.setSubject(subject);
-        message.setTo("denys.tremba.trying@gmail.com");
+        message.setTo(emailPostProcessor.postProcess(to));
         message.setText(body);
         return message;
     }

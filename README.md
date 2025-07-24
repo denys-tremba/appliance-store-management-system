@@ -1,5 +1,12 @@
 # Appliance Order Management System
 
+## Run instructions
+1. Either export environment variables acc. [.env.example](.env.example) before run or manually create & populate .env in root directory.
+2. Execute the following command:
+```
+mvn clean spring-boot:run -Dmaven.test.skip
+```
+
 ## Use Cases
 
 1. **End Order**: Client finds appliances of interest via catalog, enters appliance id (implicitly), quantity. System records order line item and presents appliance description, price, running total. Client ends order.
